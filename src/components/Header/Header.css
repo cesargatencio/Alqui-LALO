@@ -1,0 +1,53 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #001F3F;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  z-index: 1000;
+}
+
+.header .logo {
+  color: #fff;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+.nav a:hover,
+.profile-icon:hover {
+  color: #FF6D04;
+  cursor: pointer;
+}
+
+.profile-icon {
+  color: #fff;
+  font-size: 20px;
+}
+
+.login-btn {
+  background-color: transparent;
+  border: 2px solid rgb(243, 75, 24);
+  color: rgb(255, 255, 255);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+.login-btn:hover {
+  background-color: rgb(243, 75, 24);
+  color: #003366;
+}

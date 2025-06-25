@@ -1,0 +1,19 @@
+.founder-note {
+  background: #ffffff;
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Futura', sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.founder-note h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.founder-note p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 16px;
+}
