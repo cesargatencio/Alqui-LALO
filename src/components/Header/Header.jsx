@@ -21,7 +21,7 @@ const Header = () => {
   const handleLogout = async () => {
     await signOut(auth);
     localStorage.removeItem("usuario");
-    navigate("/"); // Redirige a LandingPage ("/")
+    navigate("/");
   };
 
   return (
@@ -29,9 +29,8 @@ const Header = () => {
       <div className="logo">AlquiLALO</div>
       <nav className="nav">
         <Link to="/">Inicio</Link>
-        <Link to="#features">Beneficios</Link>
-        <Link to="#faq">FAQ</Link>
-        <Link to="#contacto">Contacto</Link>
+        <Link to="/catalogo">Catálogo</Link>
+        <Link to="/contacto">Contacto</Link>
       </nav>
       <div className="auth-buttons">
         {!isAuthPage && (
