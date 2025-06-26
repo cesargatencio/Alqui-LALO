@@ -5,10 +5,10 @@ import "slick-carousel/slick/slick-theme.css";
 import "./Testimonials.css";
 
 // Importa imágenes de perfil (debes añadirlas a tu carpeta assets)
-import profile1 from "C:/Users/Thony/alquilalo-vite/src/assets/profile1.jpg";
-import profile2 from "C:/Users/Thony/alquilalo-vite/src/assets/profile2.jpg";
-import profile3 from "C:/Users/Thony/alquilalo-vite/src/assets/profile3.jpg";
-import profile4 from "C:/Users/Thony/alquilalo-vite/src/assets/profile4.jpg";
+import profile1 from "../../assets/profile1.jpg";
+import profile2 from "../../assets/profile2.jpg";
+import profile3 from "../../assets/profile3.jpg";
+import profile4 from "../../assets/profile4.jpg";
 
 const Testimonials = () => {
   const testimonials = [
