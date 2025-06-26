@@ -1,25 +1,139 @@
 .testimonials-section {
-  padding: 60px 20px;
-  background-color: #f9f9f9;
+  padding: 5rem 2rem;
+  background: #f8f9fa;
+}
+
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonials-container h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #001F3F;
+  margin-bottom: 3rem;
 }
 
 .testimonial-card {
-  background-color: #ffffff;
-  padding: 30px;
+  padding: 0 15px;
+}
+
+.testimonial-content {
+  background: white;
   border-radius: 12px;
-  margin: 0 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  text-align: center;
+  padding: 2rem;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .testimonial-text {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 16px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+  font-style: italic;
+  margin-bottom: 1.5rem;
 }
 
 .testimonial-author {
-  font-size: 16px;
-  font-weight: bold;
-  color: #0d0c0c;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #FF6D04;
+}
+
+.testimonial-author h4 {
+  margin: 0;
+  color: #001F3F;
+  font-size: 1.1rem;
+}
+
+.author-role {
+  margin: 0;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Sección de Contacto */
+.contact-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 5rem;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.contact-section h3 {
+  color: #001F3F;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.contact-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: #FF6D04;
+}
+
+.contact-details p {
+  margin: 1rem 0;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-details strong {
+  color: #001F3F;
+}
+
+.map-container {
+  margin-top: 1rem;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .testimonial-content {
+    padding: 1.5rem;
+  }
+  
+  .testimonials-container h2 {
+    font-size: 2rem;
+  }
+}
+
+.slick-dots li button:before {
+  color: #FF6D04 !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #FF6D04 !important;
 }
