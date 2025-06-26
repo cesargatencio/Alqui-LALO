@@ -23,12 +23,12 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 
 2. **Abrir terminal en la carpeta del proyecto**
    ```bash
-   cd /ruta/a/alquilalo-main
+   Ejemplo: cd /ruta/a/alquilalo-main
 3. Usa en el terminal npm install
 4. Por ultimo ejecuta el programa con npm run dev
 
 ### Opción 2: Clonando repositorio
-1. git clone https://github.com/tuusuario/alquilalo.git
+1. git clone https://github.com/cesargatencio/Alqui-LALO
 2. cd alquilalo
 3. npm install
 4. npm run dev
