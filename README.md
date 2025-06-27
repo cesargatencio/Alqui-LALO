@@ -32,3 +32,4 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 2. cd alquilalo
 3. npm install
 4. npm run dev
+modifcacion prueba
