@@ -40,6 +40,7 @@ function App() {
     <div className="App">
       <Header />
       <main>
+        <h1>HOla </h1>
         <Routes>
           <Route path="/" element={<FullLanding />} />
           <Route path="/login" element={<LoginPage />} />
