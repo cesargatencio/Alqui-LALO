@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "nombre": "Auditorio Polar",
+    "imagen": "/espacios/auditorioP.jpg",
+    "precio": "$80/hora",
+    "capacidad": "100 personas",
+    "capacidadNum": 100,
+    "descripcion": "Ideal para charlas, eventos y presentaciones grandes.",
+    "categoria": "auditorios"
+  },
+  {
+    "id": 2,
+    "nombre": "Salón Eugenio Mendoza",
+    "imagen": "/espacios/salonEU.jpg",
+    "precio": "$50/hora",
+    "capacidad": "60 personas",
+    "capacidadNum": 60,
+    "descripcion": "Perfecta para reuniones privadas y conferencias medianas.",
+    "categoria": "salones"
+  },
+  {
+    "id": 3,
+    "nombre": "Área de Videojuegos",
+    "imagen": "/espacios/videojuegos.jpg",
+    "precio": "$30/hora",
+    "capacidad": "20 personas",
+    "capacidadNum": 20,
+    "descripcion": "Ambiente para disfrutar y interactuar con personas.",
+    "categoria": "recreativos"
+  },
+  {
+    "id": 4,
+    "nombre": "Samán",
+    "imagen": "/espacios/saman.jpg",
+    "precio": "$80/hora",
+    "capacidad": "+100 personas",
+    "capacidadNum": 101,
+    "descripcion": "Espacio abierto ideal para grandes eventos.",
+    "categoria": "espacios abiertos"
+  },
+  {
+    "id": 5,
+    "nombre": "Salón metaverso",
+    "imagen": "/espacios/metaverso.jpg",
+    "precio": "$30/hora",
+    "capacidad": "15 personas",
+    "capacidadNum": 15,
+    "descripcion": "Salón con tecnología último modelo.",
+    "categoria": "salones"
+  },
+  {
+    "id": 6,
+    "nombre": "Salón de computación",
+    "imagen": "/espacios/computacion.jpg",
+    "precio": "$40/hora",
+    "capacidad": "40 personas",
+    "capacidadNum": 40,
+    "descripcion": "Salón con variedad de computadores preparadas con todo tipo de programas.",
+    "categoria": "salones"
+  }
+]
