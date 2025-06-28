@@ -13,6 +13,7 @@ import Header from "./components/Header/Header";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import CatalogoPage from "./pages/CatalogoPage";
 
 // Secciones de Landing
 import LandingCTA from "./components/LandingCTA/LandingCTA";
@@ -45,6 +46,7 @@ function App() {
           <Route path="/" element={<FullLanding />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/catalogo" element={<CatalogoPage />} />
         </Routes>
       </main>
     </div>
