@@ -27,13 +27,11 @@ const Header = () => {
 const handleContactClick = (e) => {
     e.preventDefault();
     if (location.pathname === "/" || location.pathname === "/index.html") {
-      // Si ya estamos en la página de inicio, hacemos scroll directo
       const contactSection = document.getElementById("contact-section");
       if (contactSection) {
         contactSection.scrollIntoView({ behavior: "smooth" });
       }
     } else {
-      // Si estamos en otra página, navegamos con parámetro para que LandingPage haga scroll
       navigate("/?scrollToContact=true");
     }
   };
