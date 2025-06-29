@@ -56,7 +56,20 @@ const RegisterPage = () => {
       });
 
       alert("Registro exitoso");
-      localStorage.setItem("usuario", JSON.stringify(user));
+
+      // 3. Guarda TODOS los datos en localStorage
+      const usuarioCompleto = {
+        uid: user.uid,
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        fechaNacimiento: formData.fechaNacimiento,
+        correo: formData.correo,
+        telefono: formData.telefono,
+        fotoURL: user.photoURL || "",
+        rol: "INSTITUCIONAL"
+      };
+      localStorage.setItem("usuario", JSON.stringify(usuarioCompleto));
+
       navigate("/login"); // <-- redirige a inicio de sesión
     } catch (error) {
       alert("Error en el registro: " + error.message);

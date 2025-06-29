@@ -35,9 +35,20 @@ const Header = () => {
       <div className="auth-buttons">
         {!isAuthPage && (
           user ? (
-            <button className="login-btn" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
+            <>
+              <button
+                className="user-circle-btn"
+                title="Modificar usuario"
+                onClick={() => navigate("/modificarusuario")}
+              >
+                {user.displayName
+                  ? user.displayName.charAt(0).toUpperCase()
+                  : (user.email ? user.email.charAt(0).toUpperCase() : "U")}
+              </button>
+              <button className="login-btn" onClick={handleLogout}>
+                Cerrar Sesión
+              </button>
+            </>
           ) : (
             <Link to="/login" className="login-btn">
               Iniciar Sesión

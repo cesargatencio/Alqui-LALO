@@ -1,0 +1,76 @@
+.modificar-usuario-container {
+  height: calc(100vh - 60px); /* Menos alto para que no baje tanto */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;     /* Alinea arriba */
+  box-sizing: border-box;
+  margin-top: 60px;            /* Menor separación del header */
+}
+
+.modificar-usuario-form {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 500px;
+  max-width: 700px;
+}
+
+.modificar-usuario-form h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem 2rem;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+
+.modificar-usuario-form input {
+  margin-top: 0.3rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.guardar-btn {
+  grid-column: 1 / -1;
+  margin-top: 1.5rem;
+  padding: 0.7rem;
+  background: #001F3F;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.guardar-btn:hover {
+  background: #FF6D04;
+}
+
+onClick {
+  navigate("/modificarusuario");
+}
+
+// Después de crear el usuario y antes de redirigir
+const usuario = {
+  displayName: nombre,
+  apellido: apellido,
+  telefono: telefono,
+  email: correo,
+  // otros campos...
+};
+localStorage.setItem("usuario", JSON.stringify(usuario));

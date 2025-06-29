@@ -51,3 +51,33 @@
   background-color: rgb(243, 75, 24);
   color: #003366;
 }
+
+.user-circle-btn {
+  width: 32px;           /* Más pequeño */
+  height: 32px;          /* Más pequeño */
+  border-radius: 50%;
+  background: #fff;
+  color: #001F3F;
+  border: none;
+  font-size: 1rem;       /* Más pequeño */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;     /* Espacio solo a la derecha */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.user-circle-btn:hover {
+  background: #FF6D04;
+  color: #fff;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+
