@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";import "../pages/LandingPage.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../pages/LandingPage.css";
+
 
 const LandingPage = () => {
   const [fecha, setFecha] = useState("");
@@ -21,7 +23,20 @@ const LandingPage = () => {
     }
   };
 
+// Efecto para manejar el scroll al dirigirse a Contacto
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("scrollToContact") === "true") {
+      const contactSection = document.getElementById("contact-section");
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth" });
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }
+  }, []);
+
   return (
+    
     <section className="fold">
       <div className="background-carousel">
       <Slider autoplay={true} autoplaySpeed={4000} speed={700} infinite={true} arrows={true} dots={true} pauseOnHover={false}>
@@ -76,6 +91,9 @@ const LandingPage = () => {
         )}
       </div>
     </section>
+
+      
+     
   );
 };
 

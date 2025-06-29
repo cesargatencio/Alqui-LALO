@@ -16,7 +16,7 @@ const Testimonials = () => {
       name: "Ana R.",
       role: "Profesora UNIMET",
       feedback: "Me encantó la interfaz. Muy mínima y práctica.",
-      photo: profile1
+      photo: profile4
     },
     {
       name: "Carlos M.",
@@ -34,7 +34,7 @@ const Testimonials = () => {
       name: "Luis P.",
       role: "Administrador",
       feedback: "Excelente servicio de atención al cliente.",
-      photo: profile4
+      photo: profile1
     }
   ];
 
