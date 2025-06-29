@@ -54,7 +54,7 @@
 
 .user-circle-btn {
   width: 32px;           /* Más pequeño */
-  height: 32px;          /* Más pequeño */
+  height: 32px ;          /* Más pequeño */
   border-radius: 50%;
   background: #fff ;
   color: #001F3F;
