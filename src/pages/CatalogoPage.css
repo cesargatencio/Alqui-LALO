@@ -1,7 +1,7 @@
 .catalogo-container {
   padding: 1.5rem 2rem;
   background-color: #f2f4f8;
-  min-height: 100vh;
+  min-height: 100vh ; 
 }
 
 .catalogo-container h1 {
