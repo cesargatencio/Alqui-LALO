@@ -17,7 +17,7 @@ const FAQAndCTA = () => {
           <img src="/img/img7.jpg" alt="Logo AlquiLALO" />
         </div>
 
-        <div className="footer-contact">
+        <div className="footer-contact" id="contact-section">
           <h1>Contactos:</h1>
           <div className="contact-info">
             <p>Teléfono: +58 414-7391967</p>
