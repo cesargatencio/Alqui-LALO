@@ -3,7 +3,7 @@ import "./RegisterPage.css";
 import React, { useState } from "react";
 import { db, auth } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -45,19 +45,6 @@ const RegisterPage = () => {
       const user = userCredential.user;
 
       // 2. Guardar datos adicionales en Firestore
-      await setDoc(doc(db, "usuarios", user.uid), {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        fechaNacimiento: formData.fechaNacimiento,
-        correo: formData.correo,
-        telefono: formData.telefono,
-        fotoURL: user.photoURL || "",
-        rol: "INSTITUCIONAL"
-      });
-
-      alert("Registro exitoso");
-
-      // 3. Guarda TODOS los datos en localStorage
       const usuarioCompleto = {
         uid: user.uid,
         nombre: formData.nombre,
@@ -65,12 +52,14 @@ const RegisterPage = () => {
         fechaNacimiento: formData.fechaNacimiento,
         correo: formData.correo,
         telefono: formData.telefono,
-        fotoURL: user.photoURL || "",
-        rol: "INSTITUCIONAL"
       };
+      await setDoc(doc(db, "usuarios", user.uid), usuarioCompleto);
+
+      // 3. Guardar todos los datos en localStorage
       localStorage.setItem("usuario", JSON.stringify(usuarioCompleto));
 
-      navigate("/login"); // <-- redirige a inicio de sesión
+      alert("Registro exitoso");
+      navigate("/"); // o a donde desees
     } catch (error) {
       alert("Error en el registro: " + error.message);
     }
