@@ -32,5 +32,21 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 2. cd alquilalo
 3. npm install
 4. npm run dev
-modifcacion prueba
-A
+
+Configuración de Administradores
+La lista de correos con privilegios de administrador está hard-coded en el componente que controla rutas protegidas. Para modificarla:
+
+Abre el archivo src/components/ProtectedRoute.jsx
+
+Localiza el array adminEmails al inicio del fichero. Por ejemplo:
+
+const adminEmails = [
+"cesar@unimet.edu.ve",
+"salvador@unimet.edu.ve",
+// agrega aquí más correos @unimet.edu.ve
+];
+
+Añade o elimina direcciones de correo según necesites.
+
+Guarda los cambios y reinicia el servidor:
+npm run dev

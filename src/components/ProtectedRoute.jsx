@@ -30,3 +30,8 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 };
 
 export default ProtectedRoute;
+
+export { adminEmails };
+export function isAdmin(user) {
+  return user?.email && adminEmails.includes(user.email);
+}
