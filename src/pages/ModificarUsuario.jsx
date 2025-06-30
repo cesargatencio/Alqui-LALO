@@ -6,7 +6,6 @@ import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { updatePassword, EmailAuthProvider, linkWithCredential } from "firebase/auth";
 
-
 const ModificarUsuario = () => {
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
   const navigate = useNavigate();
@@ -16,9 +15,12 @@ const ModificarUsuario = () => {
     apellido: usuarioGuardado?.apellido || "",
     correo: usuarioGuardado?.correo || usuarioGuardado?.email || "",
     telefono: usuarioGuardado?.telefono || usuarioGuardado?.phoneNumber || "",
+    fechaNacimiento: usuarioGuardado?.fechaNacimiento || "",
     password: "",
     confirmarPassword: "",
   });
+
+  const [successMessage, setSuccessMessage] = useState(""); // Nuevo estado para éxito
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,7 +33,7 @@ const ModificarUsuario = () => {
       alert("No hay un usuario válido en localStorage. Por favor, ingresa de nuevo.");
       return;
     }
-     const currentUser = auth.currentUser;
+    const currentUser = auth.currentUser;
     if (!currentUser) {
       alert("Sesión expirada. Por favor, inicia sesión de nuevo.");
       return;
@@ -46,6 +48,7 @@ const ModificarUsuario = () => {
         apellido: formData.apellido,
         correo: formData.correo,
         telefono: formData.telefono,
+        fechaNacimiento: formData.fechaNacimiento,
       };
 
       // Intenta actualizar
@@ -60,33 +63,33 @@ const ModificarUsuario = () => {
         }
       }
 
-// 2) Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
-if (formData.password && formData.password === formData.confirmarPassword) {
-  // a) Actualiza la pass en Auth
-  await updatePassword(currentUser, formData.password);
+      // 2) Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
+      if (formData.password && formData.password === formData.confirmarPassword) {
+        // a) Actualiza la pass en Auth
+        await updatePassword(currentUser, formData.password);
 
-  // b) Solo linkea si no existe ya el proveedor password
-  const alreadyLinked = currentUser.providerData.some(
-    (p) => p.providerId === "password"
-  );
-  if (!alreadyLinked) {
-    const credential = EmailAuthProvider.credential(
-      currentUser.email,
-      formData.password
-    );
-    await linkWithCredential(currentUser, credential);
-  }
-}
-
+        // b) Solo linkea si no existe ya el proveedor password
+        const alreadyLinked = currentUser.providerData.some(
+          (p) => p.providerId === "password"
+        );
+        if (!alreadyLinked) {
+          const credential = EmailAuthProvider.credential(
+            currentUser.email,
+            formData.password
+          );
+          await linkWithCredential(currentUser, credential);
+        }
+      }
 
       // Actualiza en localStorage
       localStorage.setItem(
-        "usuario", 
-        JSON.stringify({uid,...nuevosDatos
-      }));
-      // 3) Redirige al home tras éxito
-      navigate("/");
-      
+        "usuario",
+        JSON.stringify({ uid, ...nuevosDatos })
+      );
+
+      // Mensaje de éxito (ya no redirecciona)
+      setSuccessMessage("Datos guardados correctamente.");
+
     } catch (error) {
       alert("Error al actualizar los datos: " + error.message);
     }
@@ -170,6 +173,16 @@ if (formData.password && formData.password === formData.confirmarPassword) {
             />
           </label>
           <label>
+            Fecha de nacimiento:
+            <input
+              type="date"
+              name="fechaNacimiento"
+              value={formData.fechaNacimiento}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
             Nueva contraseña:
             <input
               type="password"
@@ -188,6 +201,9 @@ if (formData.password && formData.password === formData.confirmarPassword) {
             />
           </label>
         </div>
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
+        )}
         <button type="submit" className="guardar-btn">Guardar cambios</button>
       </form>
     </div>

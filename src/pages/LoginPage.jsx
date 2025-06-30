@@ -53,7 +53,7 @@ const LoginPage = () => {
       setSuccessMessage("Sesión iniciada correctamente.");
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1500);
     } catch (error) {
       setError("Las credenciales no coinciden. Intenta de nuevo.");
     }
@@ -95,6 +95,12 @@ if (docSnap.exists()) {
         alert("Error con Google: " + error.message);
       }
     };
+
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if (usuario) {
+    console.log(usuario.fechaNacimiento); // Fecha de nacimiento
+    console.log(usuario.telefono);        // Teléfono
+}
 
   return (
     <div className="login-page">

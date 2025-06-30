@@ -61,6 +61,17 @@
   background: #FF6D04;
 }
 
+.success-message {
+  color: #27ae60;
+  background: #eafaf1;
+  border: 1px solid #27ae60;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 18px;
+  text-align: center;
+  font-weight: 500;
+}
+
 onClick {
   navigate("/modificarusuario");
 }

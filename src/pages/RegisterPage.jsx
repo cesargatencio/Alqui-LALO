@@ -99,7 +99,7 @@ const RegisterPage = () => {
       };
       await setDoc(doc(db, "usuarios", user.uid), usuarioCompleto);
 
-      // 3. Guardar todos los datos en localStorage
+      // Guardar todos los datos en localStorage
       localStorage.setItem("usuario", JSON.stringify(usuarioCompleto));
 
       setSuccessMessage("Registro exitoso, redireccionando a pantalla de inicio...");
@@ -110,6 +110,13 @@ const RegisterPage = () => {
       alert("Error en el registro: " + error.message);
     }
   };
+
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if (usuario) {
+    console.log(usuario.fechaNacimiento); // Fecha de nacimiento
+    console.log(usuario.telefono);        // Teléfono
+  }
+
   return (
     <div className="register-page">
       <div className="register-container">
