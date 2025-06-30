@@ -3,9 +3,13 @@ import "./ModificarUsuario.css";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { updatePassword, EmailAuthProvider, linkWithCredential } from "firebase/auth";
+
 
 const ModificarUsuario = () => {
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     nombre: usuarioGuardado?.nombre || usuarioGuardado?.displayName || "",
@@ -22,9 +26,20 @@ const ModificarUsuario = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const stored = JSON.parse(localStorage.getItem("usuario"));
+    if (!stored || !stored.uid) {
+      alert("No hay un usuario válido en localStorage. Por favor, ingresa de nuevo.");
+      return;
+    }
+     const currentUser = auth.currentUser;
+    if (!currentUser) {
+      alert("Sesión expirada. Por favor, inicia sesión de nuevo.");
+      return;
+    }
+
     try {
-      const user = JSON.parse(localStorage.getItem("usuario"));
-      const docRef = doc(db, "usuarios", user.uid);
+      const uid = currentUser.uid;
+      const docRef = doc(db, "usuarios", uid);
 
       const nuevosDatos = {
         nombre: formData.nombre,
@@ -39,19 +54,39 @@ const ModificarUsuario = () => {
       } catch (error) {
         if (error.message.includes("No document to update")) {
           // Si no existe, lo crea
-          await setDoc(docRef, { uid: user.uid, ...nuevosDatos });
+          await setDoc(docRef, { uid, ...nuevosDatos });
         } else {
           throw error;
         }
       }
 
-      // Actualiza en localStorage
-      localStorage.setItem("usuario", JSON.stringify({
-        ...user,
-        ...nuevosDatos
-      }));
+// 2) Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
+if (formData.password && formData.password === formData.confirmarPassword) {
+  // a) Actualiza la pass en Auth
+  await updatePassword(currentUser, formData.password);
 
-      alert("Datos actualizados correctamente");
+  // b) Solo linkea si no existe ya el proveedor password
+  const alreadyLinked = currentUser.providerData.some(
+    (p) => p.providerId === "password"
+  );
+  if (!alreadyLinked) {
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      formData.password
+    );
+    await linkWithCredential(currentUser, credential);
+  }
+}
+
+
+      // Actualiza en localStorage
+      localStorage.setItem(
+        "usuario", 
+        JSON.stringify({uid,...nuevosDatos
+      }));
+      // 3) Redirige al home tras éxito
+      navigate("/");
+      
     } catch (error) {
       alert("Error al actualizar los datos: " + error.message);
     }

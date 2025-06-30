@@ -29,15 +29,20 @@ const LoginPage = () => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        localStorage.setItem("usuario", JSON.stringify(docSnap.data()));
-      } else {
-        // Si no existe, guarda solo los datos básicos
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify({
-            uid: user.uid,
-            correo: user.email,
-          })
+  localStorage.setItem(
+    "usuario",
+    JSON.stringify({
+      uid: user.uid,
+      ...docSnap.data()
+    })
+  );
+} else {
+  localStorage.setItem(
+    "usuario",
+    JSON.stringify({
+      uid: user.uid,
+      correo: user.email,
+    })
         );
       }
 
@@ -51,14 +56,39 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      console.log("✅ Login con Google:", result.user);
-      alert("Sesión iniciada con Google");
-      navigate("/"); // Redirige a la página de inicio
-    } catch (error) {
-      console.error("❌ Error al iniciar con Google:", error.message);
-      alert("Error con Google: " + error.message);
-    }
-  };
+      // Si el inicio de sesión es exitoso, result contendrá la información del usuario
+      // 1) Extrae el usuario Firebase
+const user = result.user;
+
+// 2) Intenta leer su doc en Firestore
+const docRef = doc(db, "usuarios", user.uid);
+const docSnap = await getDoc(docRef);
+
+if (docSnap.exists()) {
+  localStorage.setItem(
+    "usuario",
+    JSON.stringify({
+      uid: user.uid,
+      ...docSnap.data()
+    })
+  );
+} else {
+    localStorage.setItem(
+      "usuario",
+      JSON.stringify({
+        uid: user.uid,
+        displayName: user.displayName,
+        correo: user.email,
+        telefono: user.phoneNumber
+      })
+    );
+  }
+        navigate("/"); // Redirige a la página de inicio
+      } catch (error) {
+        console.error("❌ Error al iniciar con Google:", error.message);
+        alert("Error con Google: " + error.message);
+      }
+    };
 
   return (
     <div className="login-page">
