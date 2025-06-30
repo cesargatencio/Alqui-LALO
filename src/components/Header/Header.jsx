@@ -43,11 +43,17 @@ const handleContactClick = (e) => {
         <Link to="/">Inicio</Link>
         <Link to="/catalogo">Catálogo</Link>
         <a href="/#contact-section" onClick={handleContactClick}>Contacto</a>
+        {user && (
+  <Link to="/mis-reservas">
+    Reservas
+  </Link>
+)}
+
       </nav>
       <div className="auth-buttons">
-        {!isAuthPage && (
-          user ? (
+        {!isAuthPage && (user ? (
             <>
+             
               <button
                 className="user-circle-btn"
                 title="Modificar usuario"

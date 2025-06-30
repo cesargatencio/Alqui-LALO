@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+
 
 import "./styles/index.css";
 import "./styles/App.css";
@@ -15,6 +18,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CatalogoPage from "./pages/CatalogoPage";
 import ModificarUsuario from "./pages/ModificarUsuario";
+import ReservasPage from "./pages/ReservasPage";
 
 // Secciones de Landing
 import LandingCTA from "./components/LandingCTA/LandingCTA";
@@ -38,21 +42,38 @@ function App() {
     </>
   );
 
-  return (
-    <div className="App">
-      <Header />
-      <main>
-        <h1>HOla </h1>
-        <Routes>
-          <Route path="/" element={<FullLanding />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/catalogo" element={<CatalogoPage />} />
-          <Route path="/modificarusuario" element={<ModificarUsuario />} />
-        </Routes>
-      </main>
-    </div>
-  );
+ return (
+  <div className="App">
+    <Header />
+    <main>
+      <h1> </h1>
+      <Routes>
+        <Route path="/" element={<FullLanding />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/catalogo" element={<CatalogoPage />} />
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/modificarusuario"
+          element={
+            <ProtectedRoute>
+              <ModificarUsuario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-reservas"
+          element={
+            <ProtectedRoute>
+              <ReservasPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </main>
+  </div>
+);
 }
 
 export default App;

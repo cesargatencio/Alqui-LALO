@@ -11,6 +11,8 @@ const LandingPage = () => {
   const [duracion, setDuracion] = useState("");
   const [capacidad, setCapacidad] = useState("");
   const [espacios, setEspacios] = useState([]);
+  
+
 
   const handleBuscar = async () => {
     try {
@@ -34,6 +36,9 @@ const LandingPage = () => {
       }
     }
   }, []);
+
+
+
 
   return (
     
