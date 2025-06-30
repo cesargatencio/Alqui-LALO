@@ -4,8 +4,6 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-
-
 import "./styles/index.css";
 import "./styles/App.css";
 
@@ -21,8 +19,8 @@ import CatalogoPage from "./pages/CatalogoPage";
 import ModificarUsuario from "./pages/ModificarUsuario";
 import ReservasPage from "./pages/ReservasPage";
 import EspacioDetalle from "./pages/EspacioDetalle";
+import ConfirmarReserva from "./pages/ConfirmarReserva"; // ✅
 
-// Secciones de Landing
 import LandingCTA from "./components/LandingCTA/LandingCTA";
 import Features from "./components/Features/Features";
 import Testimonials from "./components/Testimonials/Testimonials";
@@ -33,7 +31,6 @@ function App() {
     AOS.init({ duration: 1000 });
   }, []);
 
-  // Subcomponente para mostrar toda la landing
   const FullLanding = () => (
     <>
       <LandingPage />
@@ -44,40 +41,41 @@ function App() {
     </>
   );
 
- return (
-  <div className="App">
-    <Header />
-    <main>
-      <h1> </h1>
-      <Routes>
-        <Route path="/" element={<FullLanding />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/catalogo" element={<CatalogoPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-        <Route path="/espacios/:id" element={<EspacioDetalle />} />
+  return (
+    <div className="App">
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<FullLanding />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/catalogo" element={<CatalogoPage />} />
+          <Route path="/espacios/:id" element={<EspacioDetalle />} />
+          <Route path="/confirmar-reserva" element={<ConfirmarReserva />} /> {/* ✅ PayPal */}
+          <Route path="*" element={<NotFoundPage />} />
 
-        {/* Rutas protegidas */}
-        <Route
-          path="/modificarusuario"
-          element={
-            <ProtectedRoute>
-              <ModificarUsuario />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/mis-reservas"
-          element={
-            <ProtectedRoute>
-              <ReservasPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </main>
-  </div>
-);
+          {/* Rutas protegidas */}
+          <Route
+            path="/modificarusuario"
+            element={
+              <ProtectedRoute>
+                <ModificarUsuario />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mis-reservas"
+            element={
+              <ProtectedRoute>
+                <ReservasPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
 export default App;
+
