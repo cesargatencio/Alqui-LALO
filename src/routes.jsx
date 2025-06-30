@@ -6,6 +6,7 @@ import LoginPage        from "./pages/LoginPage";
 import ModificarUsuario from "./pages/ModificarUsuario";
 import ReservasPage     from "./pages/ReservasPage";
 import ProtectedRoute   from "./components/ProtectedRoute";
+import ReservarEspacio from "./pages/ReservarEspacio";
 
 export default function AppRoutes() {
   return (
