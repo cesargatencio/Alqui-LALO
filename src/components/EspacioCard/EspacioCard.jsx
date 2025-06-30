@@ -7,7 +7,9 @@ const EspacioCard = ({ espacio }) => (
     <p>{espacio.descripcion}</p>
     <p><strong>Capacidad:</strong> {espacio.capacidad}</p>
     <p><strong>Precio:</strong> {espacio.precio}</p>
-    <button>Reservar</button>
+    <Link to={`/espacios/${espacio.id}`}>
+      <button>Ver Detalles</button>
+    </Link>
   </div>
 );
 
