@@ -1,0 +1,74 @@
+.reserva-container {
+  max-width: 640px;
+  margin: 60px auto;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.reserva-container h2 {
+  text-align: center;
+  margin-bottom: 28px;
+  font-size: 32px;
+  font-weight: 600;
+  color: #222;
+}
+
+.reserva-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.reserva-form label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.reserva-form input,
+.reserva-form select {
+  padding: 12px 18px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 32px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: border 0.2s ease;
+}
+
+.reserva-form input:focus,
+.reserva-form select:focus {
+  border-color: #ff6d04;
+  background-color: #fff;
+}
+
+.reserva-form button {
+  padding: 14px;
+  background-color: #ff6d04;
+  color: white;
+  border: none;
+  border-radius: 32px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reserva-form button:hover {
+  background-color: #e95f00;
+}
+
+.confirmacion {
+  margin-top: 24px;
+  padding: 16px 24px;
+  background-color: #e8fff0;
+  border: 1px solid #b4f1cb;
+  border-radius: 16px;
+  color: #2e7d32;
+  text-align: center;
+  font-weight: 500;
+  font-size: 16px;
+}
