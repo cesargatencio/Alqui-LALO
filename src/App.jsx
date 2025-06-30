@@ -20,6 +20,7 @@ import RegisterPage from "./pages/RegisterPage";
 import CatalogoPage from "./pages/CatalogoPage";
 import ModificarUsuario from "./pages/ModificarUsuario";
 import ReservasPage from "./pages/ReservasPage";
+import EspacioDetalle from "./pages/EspacioDetalle";
 
 // Secciones de Landing
 import LandingCTA from "./components/LandingCTA/LandingCTA";
@@ -54,6 +55,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/catalogo" element={<CatalogoPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/espacios/:id" element={<EspacioDetalle />} />
 
         {/* Rutas protegidas */}
         <Route
