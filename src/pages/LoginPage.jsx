@@ -8,6 +8,8 @@ import { db } from "../firebase";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ correo: "", password: "" });
+  const [error, setError] = useState(""); // Nuevo estado para el error
+  const [successMessage, setSuccessMessage] = useState(""); // Nuevo estado para éxito
   const navigate = useNavigate(); // Inicializa el hook
 
   const handleChange = (e) => {
@@ -16,6 +18,8 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccessMessage("");
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -29,27 +33,29 @@ const LoginPage = () => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-  localStorage.setItem(
-    "usuario",
-    JSON.stringify({
-      uid: user.uid,
-      ...docSnap.data()
-    })
-  );
-} else {
-  localStorage.setItem(
-    "usuario",
-    JSON.stringify({
-      uid: user.uid,
-      correo: user.email,
-    })
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            uid: user.uid,
+            ...docSnap.data()
+          })
+        );
+      } else {
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify({
+            uid: user.uid,
+            correo: user.email,
+          })
         );
       }
 
-      alert("Sesión iniciada correctamente");
-      navigate("/");
+      setSuccessMessage("Sesión iniciada correctamente.");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
-      alert("Error al iniciar sesión: " + error.message);
+      setError("Las credenciales no coinciden. Intenta de nuevo.");
     }
   };
 
@@ -93,8 +99,7 @@ if (docSnap.exists()) {
   return (
     <div className="login-page">
       <div className="login-container">
-        <h1>INICIO DE SESIÓN</h1> {/* Título principal */}
-
+        <h1>INICIO DE SESIÓN</h1>
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email</label>
@@ -105,9 +110,10 @@ if (docSnap.exists()) {
               onChange={handleChange}
               placeholder="ejemplo@unimet.edu.ve"
               required
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
-
           <div className="form-group">
             <label>Contraseña</label>
             <input
@@ -117,9 +123,11 @@ if (docSnap.exists()) {
               onChange={handleChange}
               placeholder="••••••"
               required
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
-
+          {error && <div className="error-message">{error}</div>}
           <button type="submit" className="login-button">
             Iniciar Sesión
           </button>
@@ -130,6 +138,9 @@ if (docSnap.exists()) {
           >
             Iniciar sesión con Google
           </button>
+          {successMessage && (
+            <div className="success-message">{successMessage}</div>
+          )}
         </form>
 
         <div className="register-prompt">

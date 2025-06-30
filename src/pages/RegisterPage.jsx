@@ -7,6 +7,8 @@ import { setDoc, doc } from "firebase/firestore";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const emailInputRef = React.useRef(null);
+  const formRef = React.useRef(null); // Agrega esta referencia
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -18,18 +20,60 @@ const RegisterPage = () => {
     telefono: "" // <-- agrega esto
   });
 
+  const [emailError, setEmailError] = useState(""); // Nuevo estado para error de email
+  const [successMessage, setSuccessMessage] = useState(""); // Nuevo estado para éxito
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setEmailError("");
+    setSuccessMessage(""); // Limpia mensaje previo
 
-    if (!formData.correo.endsWith("@correo.unimet.edu.ve")) {
-      alert("Solo se permiten correos @correo.unimet.edu.ve");
+    // 1. Validar campos vacíos
+    const camposObligatorios = [
+      "nombre",
+      "apellido",
+      "fechaNacimiento",
+      "correo",
+      "password",
+      "confirmPassword",
+      "telefono"
+    ];
+    const hayVacios = camposObligatorios.some(campo => !formData[campo]);
+    if (hayVacios) {
+      // Dispara la validación nativa de todos los campos
+      if (formRef.current) {
+        Array.from(formRef.current.elements).forEach(el => {
+          if (el.tagName === "INPUT" && !el.value) {
+            el.classList.add("input-error");
+            el.reportValidity();
+          }
+        });
+      }
       return;
     }
 
+    // 2. Validar dominio de correo solo si hay texto
+    if (
+      formData.correo &&
+      !formData.correo.endsWith("@correo.unimet.edu.ve")
+    ) {
+      setEmailError("Solo se permiten correos @correo.unimet.edu.ve");
+      if (emailInputRef.current) {
+        emailInputRef.current.setCustomValidity("Solo se permiten correos @correo.unimet.edu.ve");
+        emailInputRef.current.reportValidity();
+      }
+      return;
+    } else {
+      if (emailInputRef.current) {
+        emailInputRef.current.setCustomValidity("");
+      }
+    }
+
+    // 3. Validar contraseñas
     if (formData.password !== formData.confirmPassword) {
       alert("Las contraseñas no coinciden");
       return;
@@ -58,8 +102,10 @@ const RegisterPage = () => {
       // 3. Guardar todos los datos en localStorage
       localStorage.setItem("usuario", JSON.stringify(usuarioCompleto));
 
-      alert("Registro exitoso");
-      navigate("/"); // o a donde desees
+      setSuccessMessage("Registro exitoso, redireccionando a pantalla de inicio...");
+      setTimeout(() => {
+        navigate("/"); // Redirige después de 2 segundos
+      }, 2000);
     } catch (error) {
       alert("Error en el registro: " + error.message);
     }
@@ -82,16 +128,23 @@ const RegisterPage = () => {
           <span>o</span>
         </div>
 
-        <form className="register-form" onSubmit={handleSubmit}>
+        <form
+          className="register-form"
+          onSubmit={handleSubmit}
+          noValidate
+          ref={formRef}
+        >
           <div className="form-group">
             <label>Nombre</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="nombre"
               value={formData.nombre}
               onChange={handleChange}
-              placeholder="Ej: Juan" 
-              required 
+              placeholder="Ej: Juan"
+              required
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
@@ -104,6 +157,8 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="Ej: Pérez" 
               required 
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
@@ -115,18 +170,37 @@ const RegisterPage = () => {
               value={formData.fechaNacimiento}
               onChange={handleChange}
               required 
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
           <div className="form-group">
             <label>Email</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               name="correo"
               value={formData.correo}
-              onChange={handleChange}
-              placeholder="ejemplo@correo.unimet.edu.ve" 
-              required 
+              onChange={e => {
+                handleChange(e);
+                setEmailError("");
+              }}
+              placeholder="ejemplo@correo.unimet.edu.ve"
+              required
+              ref={emailInputRef}
+              onInvalid={e => {
+                // Si el campo está vacío, muestra el mensaje nativo
+                if (!e.target.value) {
+                  e.target.setCustomValidity(""); // mensaje nativo
+                } else if (!e.target.value.endsWith("@correo.unimet.edu.ve")) {
+                  e.target.setCustomValidity("Solo se permiten correos @correo.unimet.edu.ve");
+                }
+                e.target.classList.add("input-error");
+              }}
+              onInput={e => {
+                e.target.setCustomValidity(""); // LIMPIA SIEMPRE PRIMERO
+                e.target.classList.remove("input-error");
+              }}
             />
           </div>
 
@@ -139,6 +213,8 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="••••••" 
               required 
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
@@ -151,6 +227,8 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="••••••" 
               required 
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
@@ -163,12 +241,18 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="Ej: 0414-1234567" 
               required 
+              onInvalid={e => e.target.classList.add("input-error")}
+              onInput={e => e.target.classList.remove("input-error")}
             />
           </div>
 
           <button type="submit" className="register-button">
             Registrarse
           </button>
+
+          {successMessage && (
+            <div className="success-message">{successMessage}</div>
+          )}
         </form>
 
         <div className="login-prompt">

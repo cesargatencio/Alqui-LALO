@@ -100,3 +100,24 @@
   color: #944009;
   border-color: #944009;
 }
+
+.input-error {
+  border: 1.5px solid #e74c3c !important;
+  background: #fff6f6;
+}
+.error-message {
+  color: #e74c3c;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+  text-align: center;
+}
+.success-message {
+  color: #27ae60;
+  background: #eafaf1;
+  border: 1px solid #27ae60;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 18px;
+  text-align: center;
+  font-weight: 500;
+}
