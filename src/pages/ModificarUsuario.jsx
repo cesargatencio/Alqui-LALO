@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./ModificarUsuario.css";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
@@ -20,7 +20,10 @@ const ModificarUsuario = () => {
     confirmarPassword: "",
   });
 
-  const [successMessage, setSuccessMessage] = useState(""); // Nuevo estado para éxito
+  const [successMessage, setSuccessMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const fileInputRef = useRef();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,6 +31,20 @@ const ModificarUsuario = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setPasswordError("");
+
+    // Validación de contraseñas
+    if (formData.password || formData.confirmarPassword) {
+      if (formData.password !== formData.confirmarPassword) {
+        setPasswordError("Las contraseñas no coinciden.");
+        return;
+      }
+      if (formData.password.length < 6) {
+        setPasswordError("La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+    }
+
     const stored = JSON.parse(localStorage.getItem("usuario"));
     if (!stored || !stored.uid) {
       alert("No hay un usuario válido en localStorage. Por favor, ingresa de nuevo.");
@@ -63,7 +80,7 @@ const ModificarUsuario = () => {
         }
       }
 
-      // 2) Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
+      // Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
       if (formData.password && formData.password === formData.confirmarPassword) {
         // a) Actualiza la pass en Auth
         await updatePassword(currentUser, formData.password);
@@ -89,43 +106,21 @@ const ModificarUsuario = () => {
 
       // Mensaje de éxito (ya no redirecciona)
       setSuccessMessage("Datos guardados correctamente.");
-
     } catch (error) {
       alert("Error al actualizar los datos: " + error.message);
     }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        formData.correo,
-        formData.password
-      );
-      const user = userCredential.user;
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
 
-      // Obtener datos completos de Firestore
-      const docRef = doc(db, "usuarios", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        // Guardar todos los datos en localStorage
-        localStorage.setItem("usuario", JSON.stringify(docSnap.data()));
-      } else {
-        // Si no existe, guarda solo los datos básicos
-        localStorage.setItem("usuario", JSON.stringify({
-          displayName: user.displayName,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          uid: user.uid
-        }));
-      }
-
-      alert("Sesión iniciada correctamente");
-      navigate("/");
-    } catch (error) {
-      alert("Error al iniciar sesión: " + error.message);
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setAvatar(ev.target.result);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -133,6 +128,34 @@ const ModificarUsuario = () => {
     <div className="modificar-usuario-container">
       <form className="modificar-usuario-form" onSubmit={handleSubmit}>
         <h2>Modificar Usuario</h2>
+        {/* Círculo avatar */}
+        <div
+          className="circle-landing"
+          style={{ margin: "0 auto 0.2rem auto", cursor: "pointer", overflow: "hidden" }}
+          onClick={handleAvatarClick}
+          title="Haz clic para cambiar tu foto"
+        >
+          {avatar ? (
+            <img
+              src={avatar}
+              alt="Avatar"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            formData.nombre ? formData.nombre[0].toUpperCase() : ""
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleAvatarChange}
+          />
+        </div>
+        {/* Texto debajo del círculo */}
+        <div style={{ textAlign: "center", marginBottom: "0.5rem", color: "#001F3F", fontWeight: "500" }}>
+          Foto de perfil
+        </div>
         <div className="form-grid">
           <label>
             Nombre:
@@ -200,6 +223,9 @@ const ModificarUsuario = () => {
               onChange={handleChange}
             />
           </label>
+          {passwordError && (
+            <div style={{ color: "red", gridColumn: "1 / -1" }}>{passwordError}</div>
+          )}
         </div>
         {successMessage && (
           <div className="success-message">{successMessage}</div>
