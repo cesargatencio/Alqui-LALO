@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import data from "../data/espacios.json";
 import "./EspacioDetalle.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const EspacioDetalle = () => {
   const { id } = useParams();
@@ -56,7 +58,7 @@ const EspacioDetalle = () => {
   });
   const [verTodas, setVerTodas] = useState(false);
 
-  const enviarReseña = () => {
+  const enviarReseña = async () => {
     if (rating === 0 || comentario.trim() === "") {
       alert("Por favor selecciona una calificación y escribe tu reseña.");
       return;
@@ -71,6 +73,22 @@ const EspacioDetalle = () => {
     const nuevasReseñas = [nueva, ...reseñas];
     setReseñas(nuevasReseñas);
     localStorage.setItem(storageKey, JSON.stringify(nuevasReseñas));
+
+    // --- Guardar en Firestore ---
+    try {
+      const docRef = doc(db, "reseñas", String(espacio.id));
+      // Intenta obtener las reseñas actuales
+      const docSnap = await getDoc(docRef);
+      let firestoreReseñas = [];
+      if (docSnap.exists()) {
+        firestoreReseñas = docSnap.data().reseñas || [];
+      }
+      // Agrega la nueva reseña al principio
+      const actualizadas = [nueva, ...firestoreReseñas];
+      await setDoc(docRef, { reseñas: actualizadas });
+    } catch (error) {
+      alert("Error al guardar la reseña en Firestore: " + error.message);
+    }
 
     setRating(0);
     setHover(0);
@@ -88,6 +106,26 @@ const EspacioDetalle = () => {
     const vacías = "☆".repeat(5 - Math.floor(valor));
     return llenas + vacías;
   };
+
+  useEffect(() => {
+    const cargarReseñas = async () => {
+      try {
+        const docRef = doc(db, "reseñas", String(espacio.id));
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const firestoreReseñas = docSnap.data().reseñas || [];
+          setReseñas(firestoreReseñas);
+          localStorage.setItem(storageKey, JSON.stringify(firestoreReseñas));
+        }
+      } catch (error) {
+        // Si falla, sigue usando localStorage
+      }
+    };
+    if (espacio?.id) {
+      cargarReseñas();
+    }
+    // eslint-disable-next-line
+  }, [espacio?.id]);
 
   if (!espacio) return <p>Espacio no encontrado</p>;
 
