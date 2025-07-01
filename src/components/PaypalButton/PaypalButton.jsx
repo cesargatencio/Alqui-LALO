@@ -21,7 +21,9 @@ const PaypalButton = ({ monto = "10.00", onPagoExitoso }) => {
         }}
         onApprove={(data, actions) => {
           return actions.order.capture().then((details) => {
-            alert('Pago completado por ${details.payer.name.given_name}`);
+            alert(`Pago completado por ${details.payer.name.given_name}`
+              
+            );
             if (onPagoExitoso) {
               onPagoExitoso(details);
             }

@@ -1,5 +1,6 @@
 import React from "react";
-import PaypalButton from "../components/PaypalButton";
+import PaypalButton from "../components/PaypalButton/PaypalButton";
+
 
 const ConfirmarReserva = () => {
   const montoReserva = "15.00"; // Puedes hacerlo dinámico más adelante
