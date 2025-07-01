@@ -235,6 +235,39 @@ textarea {
     background: #e6e6e6;
 }
 
+/* Diseño para el apartado de reseñas y valoración */
+.historial-reseñas ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.historial-reseñas li {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.promedio-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.promedio-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.promedio-stars .star {
+  font-size: 1.4rem;
+  margin-right: 0.2rem;
+}
+
+
+.prom-full  { color: #ffc107; }
+.prom-half  { color: #ffc107; }    
+.prom-empty { color: #e0e0e0; }    
 
 @media (max-width: 768px) {
   .espacio-header {
