@@ -1,94 +1,211 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import data from "../data/espacios.json";
 import "./EspacioDetalle.css";
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const EspacioDetalle = () => {
-    const { id } = useParams();
-    const espacio = data.find(e => e.id === parseInt(id));
-    
-    // Fechas ocupadas (ejemplo)
-    const fechasOcupadas = [
-        new Date(2025, 6, 2), // Enero empieza en 0
-        new Date(2025, 6, 3), 
-        new Date(2025, 6, 4)  
-    ].map(date => {
-        // Normalizamos las fechas (quitamos horas, minutos, segundos)
-        const newDate = new Date(date);
-        newDate.setHours(0, 0, 0, 0);
-        return newDate;
-    });
+  const { id } = useParams();
+  const espacio = data.find((e) => e.id === parseInt(id));
 
-    // Función para verificar si una fecha está ocupada
-    const isFechaOcupada = (date) => {
-        const dateToCheck = new Date(date);
-        dateToCheck.setHours(0, 0, 0, 0);
-        
-        return fechasOcupadas.some(
-            fecha => fecha.getTime() === dateToCheck.getTime()
-        );
+  // Dado un número promedio (puede tener decimal), retorna un array de iconos
+  const renderEstrellasPromedio = (promedio) => {
+    const fullStars = Math.floor(promedio);
+    const hasHalfStar = promedio - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return [
+        ...Array(fullStars).fill("full"),
+        ...(hasHalfStar ? ["half"] : []),
+        ...Array(emptyStars).fill("empty"),
+    ].map((type, i) => {
+        if (type === "full") return <FaStar key={i} className="star prom-full" />;
+        if (type === "half") return <FaStarHalfAlt key={i} className="star prom-half" />;
+        return <FaRegStar key={i} className="star prom-empty" />;
+    });
+  };
+
+
+  const fechasOcupadas = [
+    new Date(2025, 6, 2),
+    new Date(2025, 6, 3),
+    new Date(2025, 6, 4),
+  ].map((date) => {
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    return newDate;
+  });
+
+  const isFechaOcupada = (date) => {
+    const dateToCheck = new Date(date);
+    dateToCheck.setHours(0, 0, 0, 0);
+    return fechasOcupadas.some(
+      (fecha) => fecha.getTime() === dateToCheck.getTime()
+    );
+  };
+
+  const storageKey = `reseñas_espacio_${espacio?.id}`;
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [comentario, setComentario] = useState("");
+  const [reseñas, setReseñas] = useState(() => {
+    const guardadas = localStorage.getItem(storageKey);
+    return guardadas ? JSON.parse(guardadas) : [];
+  });
+  const [verTodas, setVerTodas] = useState(false);
+
+  const enviarReseña = () => {
+    if (rating === 0 || comentario.trim() === "") {
+      alert("Por favor selecciona una calificación y escribe tu reseña.");
+      return;
+    }
+
+    const nueva = {
+      id: Date.now(),
+      estrellas: rating,
+      texto: comentario,
     };
 
-    if (!espacio) return <p>Espacio no encontrado</p>;
+    const nuevasReseñas = [nueva, ...reseñas];
+    setReseñas(nuevasReseñas);
+    localStorage.setItem(storageKey, JSON.stringify(nuevasReseñas));
 
+    setRating(0);
+    setHover(0);
+    setComentario("");
+  };
+
+  const obtenerPromedio = () => {
+    if (reseñas.length === 0) return 0;
+    const total = reseñas.reduce((sum, r) => sum + r.estrellas, 0);
+    return (total / reseñas.length).toFixed(1);
+  };
+
+  const mostrarEstrellas = (valor) => {
+    const llenas = "★".repeat(Math.floor(valor));
+    const vacías = "☆".repeat(5 - Math.floor(valor));
+    return llenas + vacías;
+  };
+
+  if (!espacio) return <p>Espacio no encontrado</p>;
 
   return (
     <div className="espacio-detalle">
-        <div className="espacio-header">
-            <div className="espacio-imagen">
-                <img src={espacio.imagen} alt={espacio.nombre} />
+      <div className="espacio-header">
+        <div className="espacio-imagen">
+          <img src={espacio.imagen} alt={espacio.nombre} />
+        </div>
+        <div className="espacio-detalles">
+          <h2>{espacio.nombre}</h2>
+          <p><strong>Espacio:</strong> {espacio.capacidad}</p>
+          <p><strong>Descripción:</strong> {espacio.descripcion}</p>
+          <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
+          <button className="btn-alquilar">ALQUILAR</button>
+        </div>
+      </div>
+
+      <div className="espacio-extra">
+        <div className="extra-box">
+          <h3>Calendario de disponibilidad</h3>
+          <Calendar
+            tileDisabled={({ date, view }) => {
+              if (view !== "month") return false;
+              return isFechaOcupada(date);
+            }}
+            tileClassName={({ date }) => {
+              return isFechaOcupada(date) ? "fecha-ocupada" : null;
+            }}
+            minDate={new Date()}
+            className="calendario-reserva"
+          />
+          <div className="leyenda-calendario">
+            <div className="leyenda-item">
+              <span className="leyenda-color fecha-libre"></span>
+              <span>Disponible</span>
             </div>
-            <div className="espacio-detalles">
-                <h2>{espacio.nombre}</h2>
-                <p><strong>Espacio:</strong> {espacio.capacidad}</p>
-                <p><strong>Descripción:</strong> {espacio.descripcion}</p>
-                <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
-                <button className="btn-alquilar">ALQUILAR</button>
+            <div className="leyenda-item">
+              <span className="leyenda-color fecha-ocupada"></span>
+              <span>Ocupado</span>
             </div>
+          </div>
         </div>
 
-        <div className="espacio-extra">
-            <div className="extra-box">
-                <h3>Calendario de disponibilidad</h3>
-                <Calendar
-                    tileDisabled={({ date, view }) => {
-                        if (view !== 'month') return false;
-                        return isFechaOcupada(date);
-                    }}
-                    tileClassName={({ date }) => {
-                        return isFechaOcupada(date) ? 'fecha-ocupada' : null;
-                    }}
-                    minDate={new Date()}
-                    className="calendario-reserva"
-                />
-                <div className="leyenda-calendario">
-                    <div className="leyenda-item">
-                        <span className="leyenda-color fecha-libre"></span>
-                        <span>Disponible</span>
-                    </div>
-                    <div className="leyenda-item">
-                        <span className="leyenda-color fecha-ocupada"></span>
-                        <span>Ocupado</span>
-                    </div>
-                </div>
-            </div>
-            <div className="extra-box">
-                <h3>Valóranos</h3>
-                <div className="estrellas">⭐⭐⭐⭐☆</div>
-                <textarea placeholder="Escríbenos acá tu reseña..." />
-            </div>
-        </div>
+        <div className="extra-box">
+          <h3>Valóranos</h3>
 
-        <div className="espacio-eventos">
-            <h3>Eventos:</h3>
-            <ul>
-            <li>No hay eventos programados aún.</li>
-            </ul>
+          <div className="promedio-container">
+            <span className="promedio-text">{obtenerPromedio()}</span>
+            <span className="promedio-stars">
+                {renderEstrellasPromedio(parseFloat(obtenerPromedio()))}
+            </span>
+          </div>
+
+
+          <div className="estrellas">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                onClick={() => setRating(star)}
+                onMouseEnter={() => setHover(star)}
+                onMouseLeave={() => setHover(0)}
+                style={{
+                  cursor: "pointer",
+                  color: (hover || rating) >= star ? "#ffbb00" : "#ccc",
+                  fontSize: "1.8rem",
+                }}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+
+          <textarea
+            placeholder="Escríbenos acá tu reseña..."
+            value={comentario}
+            onChange={(e) => setComentario(e.target.value)}
+          />
+
+          <button className="btn-alquilar" onClick={enviarReseña}>
+            Enviar Reseña
+          </button>
+
+          {reseñas.length > 0 && (
+            <div className="historial-reseñas">
+              <h4 style={{ marginTop: "1rem" }}>Reseñas:</h4>
+              <ul>
+                {(verTodas ? reseñas : reseñas.slice(0, 3)).map((r) => (
+                  <li key={r.id} style={{ margin: "0.5rem 0" }}>
+                    <span style={{ color: "#ffbb00" }}>
+                      {mostrarEstrellas(r.estrellas)}
+                    </span>
+                    <br />
+                    <span style={{ fontSize: "0.95rem", color: "#333" }}>{r.texto}</span>
+                  </li>
+                ))}
+              </ul>
+              {reseñas.length > 3 && (
+                <button
+                  className="btn-alquilar"
+                  onClick={() => setVerTodas(!verTodas)}
+                  style={{ marginTop: "0.8rem", padding: "0.4rem 1rem", fontSize: "0.9rem" }}
+                >
+                  {verTodas ? "Ver menos" : "Ver todas"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
+      </div>
+
+      <div className="espacio-eventos">
+        <h3>Eventos:</h3>
+        <ul>
+          <li>No hay eventos programados aún.</li>
+        </ul>
+      </div>
     </div>
-
   );
 };
 
