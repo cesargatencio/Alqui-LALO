@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Agrega useNavigate
 import "./LoginPage.css";
-import { auth, googleProvider } from "../firebase";
-import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import AuthService from "../services/AuthSingleton";
+
+const authService = AuthService.getInstance();
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ correo: "", password: "" });
@@ -21,33 +20,13 @@ const LoginPage = () => {
     setError("");
     setSuccessMessage("");
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        formData.correo,
-        formData.password
-      );
-      const user = userCredential.user;
+      const user = await authService.loginWithEmail(formData.correo, formData.password);
+      const userData = await authService.getUserData(user.uid);
 
-      // Obtener datos completos de Firestore
-      const docRef = doc(db, "usuarios", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify({
-            uid: user.uid,
-            ...docSnap.data()
-          })
-        );
+      if (userData) {
+        localStorage.setItem("usuario", JSON.stringify({ uid: user.uid, ...userData }));
       } else {
-        localStorage.setItem(
-          "usuario",
-          JSON.stringify({
-            uid: user.uid,
-            correo: user.email,
-          })
-        );
+        localStorage.setItem("usuario", JSON.stringify({ uid: user.uid, correo: user.email }));
       }
 
       setSuccessMessage("Sesión iniciada correctamente.");
@@ -61,40 +40,24 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      // Si el inicio de sesión es exitoso, result contendrá la información del usuario
-      // 1) Extrae el usuario Firebase
-const user = result.user;
+      const user = await authService.loginWithGoogle();
+      const userData = await authService.getUserData(user.uid);
 
-// 2) Intenta leer su doc en Firestore
-const docRef = doc(db, "usuarios", user.uid);
-const docSnap = await getDoc(docRef);
-
-if (docSnap.exists()) {
-  localStorage.setItem(
-    "usuario",
-    JSON.stringify({
-      uid: user.uid,
-      ...docSnap.data()
-    })
-  );
-} else {
-    localStorage.setItem(
-      "usuario",
-      JSON.stringify({
-        uid: user.uid,
-        displayName: user.displayName,
-        correo: user.email,
-        telefono: user.phoneNumber
-      })
-    );
-  }
-        navigate("/"); // Redirige a la página de inicio
-      } catch (error) {
-        console.error("❌ Error al iniciar con Google:", error.message);
-        alert("Error con Google: " + error.message);
+      if (userData) {
+        localStorage.setItem("usuario", JSON.stringify({ uid: user.uid, ...userData }));
+      } else {
+        localStorage.setItem("usuario", JSON.stringify({
+          uid: user.uid,
+          displayName: user.displayName,
+          correo: user.email,
+          telefono: user.phoneNumber
+        }));
       }
-    };
+      navigate("/");
+    } catch (error) {
+      alert("Error con Google: " + error.message);
+    }
+  };
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   if (usuario) {

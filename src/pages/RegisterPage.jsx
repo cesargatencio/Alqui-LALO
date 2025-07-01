@@ -2,8 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import React, { useState } from "react";
 import { db, auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
+import AuthService from "../services/AuthSingleton";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -23,6 +23,8 @@ const RegisterPage = () => {
   const [emailError, setEmailError] = useState(""); // Nuevo estado para error de email
   const [successMessage, setSuccessMessage] = useState(""); // Nuevo estado para éxito
 
+  const authService = AuthService.getInstance();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -30,7 +32,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEmailError("");
-    setSuccessMessage(""); // Limpia mensaje previo
+    setSuccessMessage("");
 
     // 1. Validar campos vacíos
     const camposObligatorios = [
@@ -44,7 +46,6 @@ const RegisterPage = () => {
     ];
     const hayVacios = camposObligatorios.some(campo => !formData[campo]);
     if (hayVacios) {
-      // Dispara la validación nativa de todos los campos
       if (formRef.current) {
         Array.from(formRef.current.elements).forEach(el => {
           if (el.tagName === "INPUT" && !el.value) {
@@ -75,20 +76,18 @@ const RegisterPage = () => {
 
     // 3. Validar contraseñas
     if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      setEmailError("Las contraseñas no coinciden");
       return;
     }
 
     try {
-      // 1. Registrar usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+      // 1. Registrar usuario en Firebase Auth usando el singleton
+      const user = await authService.registerWithEmail(
         formData.correo,
         formData.password
       );
-      const user = userCredential.user;
 
-      // 2. Guardar datos adicionales en Firestore
+      // 2. Guardar datos adicionales en Firestore usando el singleton
       const usuarioCompleto = {
         uid: user.uid,
         nombre: formData.nombre,
@@ -97,17 +96,14 @@ const RegisterPage = () => {
         correo: formData.correo,
         telefono: formData.telefono,
       };
-      await setDoc(doc(db, "usuarios", user.uid), usuarioCompleto);
-
-      // Guardar todos los datos en localStorage
-      localStorage.setItem("usuario", JSON.stringify(usuarioCompleto));
+      await authService.saveUserData(user.uid, usuarioCompleto);
 
       setSuccessMessage("Registro exitoso, redireccionando a pantalla de inicio...");
       setTimeout(() => {
-        navigate("/"); // Redirige después de 2 segundos
+        navigate("/");
       }, 2000);
     } catch (error) {
-      alert("Error en el registro: " + error.message);
+      setEmailError("Error en el registro: " + error.message);
     }
   };
 

@@ -1,14 +1,13 @@
 import React, { useState, useRef } from "react";
 import "./ModificarUsuario.css";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { updatePassword, EmailAuthProvider, linkWithCredential } from "firebase/auth";
+import AuthService from "../services/AuthSingleton";
 
 const ModificarUsuario = () => {
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
   const navigate = useNavigate();
+  const authService = AuthService.getInstance();
 
   const [formData, setFormData] = useState({
     nombre: usuarioGuardado?.nombre || usuarioGuardado?.displayName || "",
@@ -32,6 +31,7 @@ const ModificarUsuario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPasswordError("");
+    setSuccessMessage("");
 
     // Validación de contraseñas
     if (formData.password || formData.confirmarPassword) {
@@ -45,21 +45,15 @@ const ModificarUsuario = () => {
       }
     }
 
-    const stored = JSON.parse(localStorage.getItem("usuario"));
-    if (!stored || !stored.uid) {
-      alert("No hay un usuario válido en localStorage. Por favor, ingresa de nuevo.");
-      return;
-    }
-    const currentUser = auth.currentUser;
+    // Obtén el usuario actual desde el singleton
+    const currentUser = authService.getCurrentUser();
     if (!currentUser) {
-      alert("Sesión expirada. Por favor, inicia sesión de nuevo.");
+      setPasswordError("Sesión expirada. Por favor, inicia sesión de nuevo.");
       return;
     }
 
     try {
       const uid = currentUser.uid;
-      const docRef = doc(db, "usuarios", uid);
-
       const nuevosDatos = {
         nombre: formData.nombre,
         apellido: formData.apellido,
@@ -68,24 +62,13 @@ const ModificarUsuario = () => {
         fechaNacimiento: formData.fechaNacimiento,
       };
 
-      // Intenta actualizar
-      try {
-        await updateDoc(docRef, nuevosDatos);
-      } catch (error) {
-        if (error.message.includes("No document to update")) {
-          // Si no existe, lo crea
-          await setDoc(docRef, { uid, ...nuevosDatos });
-        } else {
-          throw error;
-        }
-      }
+      // Usa el singleton para guardar los datos en Firestore
+      await authService.saveUserData(uid, nuevosDatos);
 
       // Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
       if (formData.password && formData.password === formData.confirmarPassword) {
-        // a) Actualiza la pass en Auth
         await updatePassword(currentUser, formData.password);
 
-        // b) Solo linkea si no existe ya el proveedor password
         const alreadyLinked = currentUser.providerData.some(
           (p) => p.providerId === "password"
         );
@@ -98,16 +81,9 @@ const ModificarUsuario = () => {
         }
       }
 
-      // Actualiza en localStorage
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify({ uid, ...nuevosDatos })
-      );
-
-      // Mensaje de éxito (ya no redirecciona)
       setSuccessMessage("Datos guardados correctamente.");
     } catch (error) {
-      alert("Error al actualizar los datos: " + error.message);
+      setPasswordError("Error al actualizar los datos: " + error.message);
     }
   };
 
