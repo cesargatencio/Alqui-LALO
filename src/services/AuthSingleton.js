@@ -17,7 +17,8 @@ class AuthService {
     "salvador@unimet.edu.ve",
     "jesus.angulo@correo.unimet.edu.ve",
     "an.flamez@correo.unimet.edu.ve",
-    "f.martinez@correo.unimet.edu.ve"
+    "f.martinez@correo.unimet.edu.ve",
+    "jesus.delgado@correo.unimet.edu.ve"
   ];
 
   static isAdmin(user) {
