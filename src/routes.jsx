@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LandingPage      from "./pages/LandingPage";
 import LoginPage        from "./pages/LoginPage";
-import ModificarUsuario from "./pages/ModificarUsuario";
-import ReservasPage     from "./pages/ReservasPage";
 import CatalogoPage     from "./pages/CatalogoPage";
 import ReservarEspacio  from "./pages/ReservarEspacio";
+import ModificarUsuario from "./pages/ModificarUsuario";
+import ReservasPage     from "./pages/ReservasPage";
 
 import ProtectedRoute   from "./components/ProtectedRoute";
 
@@ -14,14 +14,12 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rutas Públicas */}
+        {/* Públicas */}
         <Route path="/"      element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Catálogo no requiere login */}
         <Route path="/catalogo" element={<CatalogoPage />} />
 
-        {/* Reservar puede requerir usuario autenticado */}
+        {/* Reservar (requiere login) */}
         <Route
           path="/reservar"
           element={
@@ -31,7 +29,7 @@ export default function AppRoutes() {
           }
         />
 
-        {/* Rutas Protegidas */}
+        {/* Protegidas */}
         <Route
           path="/modificarusuario"
           element={
@@ -52,3 +50,4 @@ export default function AppRoutes() {
     </BrowserRouter>
   );
 }
+
