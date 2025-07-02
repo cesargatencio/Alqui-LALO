@@ -15,7 +15,9 @@ class AuthService {
   static adminEmails = [
     "c.atencio@correo.unimet.edu.ve",
     "salvador@unimet.edu.ve",
-    "jesus.angulo@correo.unimet.edu.ve"
+    "jesus.angulo@correo.unimet.edu.ve",
+    "an.flamez@correo.unimet.edu.ve",
+    "f.martinez@correo.unimet.edu.ve"
     // agrega aquí más si lo necesitas
   ];
 
