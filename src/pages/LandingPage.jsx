@@ -64,52 +64,36 @@ const LandingPage = () => {
 
       {/* Formulario de búsqueda */}
       <form className="search-bar" onSubmit={handleBuscar}>
-        <label>
-          Fecha:
-          <input
-            type="date"
-            value={fecha}
-            onChange={e => setFecha(e.target.value)}
-            required
-          />
-        </label>
-
-        <label>
-          Hora inicio:
-          <input
-            type="time"
-            value={desde}
-            onChange={e => setDesde(e.target.value)}
-            required
-          />
-        </label>
-
-        <label>
-          Hora fin:
-          <input
-            type="time"
-            value={hasta}
-            onChange={e => setHasta(e.target.value)}
-            required
-          />
-        </label>
-
-        <label>
-          Capacidad máxima:
-          <select
-            value={capacidad}
-            onChange={e => setCapacidad(e.target.value)}
-            required
-          >
-            <option disabled value="">Visitantes</option>
-            <option value="50">0 - 50</option>
-            <option value="100">51 - 100</option>
-            <option value="200">101 - 200</option>
-            <option value="300">201 - 300</option>
-            <option value="500">301 - 500</option>
-          </select>
-        </label>
-
+        <input
+          type="date"
+          value={fecha}
+          onChange={e => setFecha(e.target.value)}
+          required
+        />
+        <input
+          type="time"
+          value={desde}
+          onChange={e => setDesde(e.target.value)}
+          required
+        />
+        <input
+          type="time"
+          value={hasta}
+          onChange={e => setHasta(e.target.value)}
+          required
+        />
+        <select
+          value={capacidad}
+          onChange={e => setCapacidad(e.target.value)}
+          required
+        >
+          <option disabled value="">Visitantes</option>
+          <option value="50">0 - 50</option>
+          <option value="100">51 - 100</option>
+          <option value="200">101 - 200</option>
+          <option value="300">201 - 300</option>
+          <option value="500">301 - 500</option>
+        </select>
         <button className="cta-button" type="submit">
           Buscar
         </button>
@@ -157,8 +141,6 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-
 
 
 
