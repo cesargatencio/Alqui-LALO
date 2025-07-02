@@ -1,4 +1,3 @@
-// src/pages/CatalogoPage.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -11,21 +10,20 @@ import "./CatalogoPage.css";
 
 export default function CatalogoPage() {
   const [filtros, setFiltros] = useState({
-    capacidad: "",
-    tipo: "",
-    ubicacion: "",
+    fecha: "",
     desde: "",
-    hasta: ""
+    hasta: "",
+    capacidad: ""
   });
   const [espacios, setEspacios] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Mantener scroll arriba al cargar
+  // Mantener scroll arriba
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Cada vez que cambien los filtros, recargar datos
+  // Recargar espacios cuando cambian los filtros
   useEffect(() => {
     setLoading(true);
     const fn = filtros.desde && filtros.hasta
@@ -51,7 +49,6 @@ export default function CatalogoPage() {
 
   return (
     <div className="catalogo-container">
-      {/* Botón solo para admin */}
       {isAdmin && (
         <Link to="/agregar-espacio" className="btn-agregar-espacio">
           Agregar Espacio
@@ -60,10 +57,8 @@ export default function CatalogoPage() {
 
       <h1>Catálogo de Espacios</h1>
 
-      {/* Barra de filtros dinámica */}
       <FilterBar filtros={filtros} onChange={handleChange} />
 
-      {/* Resultados */}
       {loading ? (
         <p>Cargando espacios…</p>
       ) : (
