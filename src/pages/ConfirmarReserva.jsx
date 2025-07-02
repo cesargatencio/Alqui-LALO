@@ -14,7 +14,9 @@ const ConfirmarReserva = () => {
     return <p>No hay datos de reserva. Por favor selecciona un espacio, fecha, hora y duración.</p>;
   }
 
-  const montoReserva = espacio.precio || "15.00";
+  const montoReserva = espacio.precio
+    ? parseFloat(String(espacio.precio).replace(/[^0-9.]/g, ""))
+    : 15.00;
   const reservaId = `${espacio.id}_${fecha}_${hora}`; // Puedes ajustar el formato según tu lógica
 
   // Al confirmar el pago:
