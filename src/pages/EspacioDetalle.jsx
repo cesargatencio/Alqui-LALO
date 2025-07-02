@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import data from "../data/espacios.json";
 import "./EspacioDetalle.css";
 import Calendar from "react-calendar";
@@ -7,9 +7,11 @@ import "react-calendar/dist/Calendar.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useAuth } from "../hooks/useAuth"; // Si tienes un hook para el usuario actual
 
 const EspacioDetalle = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const espacio = data.find((e) => e.id === parseInt(id));
 
   // Dado un número promedio (puede tener decimal), retorna un array de iconos
@@ -57,6 +59,10 @@ const EspacioDetalle = () => {
     return guardadas ? JSON.parse(guardadas) : [];
   });
   const [verTodas, setVerTodas] = useState(false);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
+  const [horaSeleccionada, setHoraSeleccionada] = useState(""); // Nuevo estado para hora
+  const [duracionSeleccionada, setDuracionSeleccionada] = useState(""); // Nuevo estado para duración
+  const usuario = useAuth ? useAuth() : null; // O usa tu singleton para obtener el usuario
 
   const enviarReseña = async () => {
     if (rating === 0 || comentario.trim() === "") {
@@ -140,7 +146,23 @@ const EspacioDetalle = () => {
           <p><strong>Espacio:</strong> {espacio.capacidad}</p>
           <p><strong>Descripción:</strong> {espacio.descripcion}</p>
           <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
-          <button className="btn-alquilar">ALQUILAR</button>
+          <button
+            className="btn-alquilar"
+            disabled={!fechaSeleccionada || !horaSeleccionada || !duracionSeleccionada}
+            onClick={() => {
+              navigate("/confirmar-reserva", {
+                state: {
+                  espacio,
+                  fecha: fechaSeleccionada,
+                  hora: horaSeleccionada,
+                  duracion: duracionSeleccionada,
+                  usuario, // si quieres pasar el usuario actual
+                },
+              });
+            }}
+          >
+            ALQUILAR
+          </button>
         </div>
       </div>
 
@@ -157,6 +179,7 @@ const EspacioDetalle = () => {
             }}
             minDate={new Date()}
             className="calendario-reserva"
+            onClickDay={(date) => setFechaSeleccionada(date)}
           />
           <div className="leyenda-calendario">
             <div className="leyenda-item">
