@@ -1,47 +1,57 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import AuthService from "../services/AuthSingleton";
 import FilterBar from "../components/FilterBar/FilterBar";
 import EspacioCard from "../components/EspacioCard/EspacioCard";
-import { buscarEspacios, espaciosDisponibles } from "../services/EspacioService";
+import {
+  buscarEspacios,
+  espaciosDisponibles,
+} from "../services/EspacioService";
 
 import "./CatalogoPage.css";
 
 export default function CatalogoPage() {
-  const [filtros, setFiltros] = useState({
-    fecha: "",
-    desde: "",
-    hasta: "",
-    capacidad: ""
-  });
+  const [searchParams] = useSearchParams();
+
+  // Leer filtros de la URL
+  const fechaInicio = searchParams.get("fechaInicio") || "";
+  const fechaFin = searchParams.get("fechaFin") || "";
+  const duracion = searchParams.get("duracion") || "";
+  const capacidad = searchParams.get("capacidad") || "";
+
+  // Construir estado de filtros
+  const initialFiltros = { fechaInicio, fechaFin, duracion, capacidad };
+  const [filtros, setFiltros] = useState(initialFiltros);
+
   const [espacios, setEspacios] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Mantener scroll arriba
+  // Actualiza filtros si cambian los params
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    setFiltros({ fechaInicio, fechaFin, duracion, capacidad });
+  }, [fechaInicio, fechaFin, duracion, capacidad]);
 
-  // Recargar espacios cuando cambian los filtros
+  // Dispara la consulta en Firestore cuando filtros cambian
   useEffect(() => {
     setLoading(true);
-    const fn = filtros.desde && filtros.hasta
-      ? espaciosDisponibles
-      : buscarEspacios;
+    const fn =
+      filtros.fechaInicio && filtros.fechaFin
+        ? espaciosDisponibles
+        : buscarEspacios;
 
     fn(filtros)
-      .then(data => setEspacios(data))
-      .catch(err => {
+      .then((data) => setEspacios(data))
+      .catch((err) => {
         console.error("Error fetching espacios:", err);
         setEspacios([]);
       })
       .finally(() => setLoading(false));
   }, [filtros]);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFiltros(prev => ({ ...prev, [name]: value }));
+    setFiltros((prev) => ({ ...prev, [name]: value }));
   };
 
   const user = AuthService.getInstance().getCurrentUser();
@@ -54,23 +64,31 @@ export default function CatalogoPage() {
           Agregar Espacio
         </Link>
       )}
-
       <h1>Catálogo de Espacios</h1>
 
-      <FilterBar filtros={filtros} onChange={handleChange} />
+      {/* Filtros dinámicos */}
+      <FilterBar
+        filtros={filtros}
+        onChange={handleChange}
+        onSearch={() => {
+          /* opcional: navegar con nuevos filtros */
+        }}
+      />
 
       {loading ? (
-        <p>Cargando espacios…</p>
+        <p className="loading">Cargando espacios…</p>
       ) : (
-        <div className="catalogo-grid">
+        <>
           {espacios.length > 0 ? (
-            espacios.map(e => (
-              <EspacioCard key={e.id} espacio={e} />
-            ))
+            <div className="catalogo-grid">
+              {espacios.map((e) => (
+                <EspacioCard key={e.id} espacio={e} />
+              ))}
+            </div>
           ) : (
-            <p>No se encontraron espacios.</p>
+            <p className="no-results">No se encontraron espacios.</p>
           )}
-        </div>
+        </>
       )}
     </div>
   );
