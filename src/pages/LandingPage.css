@@ -12,12 +12,49 @@
   overflow: visible;
 }
 
+.background-carousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.background-carousel .slick-slide img,
 .background-carousel img {
   width: 100%;
   height: 100vh;
   object-fit: cover;
   opacity: 0.5;
+  display: block;
 }
+
+/* Restore horizontal dots */
+.slick-dots {
+  position: absolute;
+  bottom: 16px;
+  display: flex !important;
+  justify-content: center;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+}
+.slick-dots li {
+  margin: 0 4px;
+}
+
+/* Arrow positioning */
+.slick-prev, .slick-next {
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  opacity: 0.8;
+}
+.slick-prev { left: 16px !important; }
+.slick-next { right: 16px !important; }
 
 .fold > *:not(.background-carousel) {
   position: relative;
@@ -37,6 +74,7 @@
   color: #333;
 }
 
+/* Centered search bar */
 .search-bar {
   display: flex;
   flex-wrap: wrap;
@@ -46,7 +84,7 @@
   border-radius: 50px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   max-width: 900px;
-  margin-top: 1rem;
+  margin: 0 auto 1rem auto;
 }
 
 .search-bar .search-group {
@@ -86,4 +124,3 @@
 .cta-button:hover {
   background-color: #e95f00;
 }
-
