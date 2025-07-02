@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase"; 
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
+import { Bar } from "react-chartjs-2";
 import {
-  collection,
-  getDocs,
-  Timestamp,
-} from "firebase/firestore";
-import "./ReportsPage.css"; 
+  Chart,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import "./ReportsPage.css";
+
+Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TIME_RANGES = [
   { label: "Semana", value: 7 },
@@ -41,7 +48,7 @@ const ReportsPage = () => {
     fetchReservas();
   }, []);
 
-  // Filtrar reservas por rango de tiempo
+  // Filtrar reservas por rango de tiempo y estado
   const getFilteredReservas = (estado = null) => {
     const now = new Date();
     const fromDate = new Date();
@@ -60,6 +67,28 @@ const ReportsPage = () => {
     });
   };
 
+  // Agrupar reservas por fecha para las gráficas
+  const groupByDate = (data) => {
+    const counts = {};
+    data.forEach((r) => {
+      const fecha = r.fechaReserva
+        ? r.fechaReserva.toDate
+          ? r.fechaReserva.toDate()
+          : new Date(r.fechaReserva)
+        : null;
+      if (!fecha) return;
+      const key = fecha.toLocaleDateString();
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    // Ordenar fechas
+    return Object.keys(counts)
+      .sort((a, b) => new Date(a) - new Date(b))
+      .reduce((obj, key) => {
+        obj[key] = counts[key];
+        return obj;
+      }, {});
+  };
+
   // Ranking de salones
   const getRankingSalones = () => {
     const counts = {};
@@ -73,6 +102,124 @@ const ReportsPage = () => {
       .sort((a, b) => b[1] - a[1])
       .map(([nombre, cantidad]) => ({ nombre, cantidad }));
   };
+
+
+  
+  // Gráfica de solicitudes de alquiler
+  const renderAlquileresChart = () => {
+    const filtered = getFilteredReservas();
+    const grouped = groupByDate(filtered);
+    const labels = Object.keys(grouped);
+    const data = Object.values(grouped);
+
+    return (
+      <Bar
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Solicitudes de alquiler",
+              data,
+              backgroundColor: "#2563eb",
+            },
+          ],
+        }}
+        options={{
+          responsive: true,
+          plugins: { legend: { display: false } },
+          maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          precision: 0
+        }
+      }
+    }
+        }}
+      />
+    );
+  };
+
+  // Gráfica de canceladas
+  const renderCanceladasChart = () => {
+    const filtered = getFilteredReservas("cancelada");
+    const grouped = groupByDate(filtered);
+    const labels = Object.keys(grouped);
+    const data = Object.values(grouped);
+
+    return (
+      <Bar
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Solicitudes canceladas",
+              data,
+              backgroundColor: "#f59e42",
+            },
+          ],
+        }}
+        options={{
+          responsive: true,
+          plugins: { legend: { display: false } },
+          maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          precision: 0
+        }
+      }
+    }
+        }}
+      />
+    );
+  };
+
+  // Gráfica de ranking de salones
+  const renderRankingChart = () => {
+    const ranking = getRankingSalones();
+    const labels = ranking.map((r) => r.nombre);
+    const data = ranking.map((r) => r.cantidad);
+
+    return (
+      <Bar
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Solicitudes por salón",
+              data,
+              backgroundColor: "#2563eb",
+            },
+          ],
+        }}
+        options={{
+          indexAxis: "y",
+          responsive: true,
+          plugins: { legend: { display: false } },
+          maintainAspectRatio: false,
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          precision: 0
+        }
+      }
+    }
+        }}
+      />
+    );
+  };
+
+  
+
+
+ 
 
   // Renderizado de cada reporte
   const renderReportContent = () => {
@@ -178,9 +325,11 @@ const ReportsPage = () => {
     return null;
   };
 
+  // Renderizado principal
   return (
     <div className="reports-bg">
       <div className="reports-card">
+        {/* Lado izquierdo: menú y filtros */}
         <div className="reports-left">
           <h2>Reportes Administrativos</h2>
           <p>
@@ -231,7 +380,19 @@ const ReportsPage = () => {
             </div>
           )}
         </div>
-        <div className="reports-right">{renderReportContent()}</div>
+        {/* Lado derecho: tabla y gráfica */}
+        <div className="reports-right">
+          <div className="reports-table-graph">
+            <div className="reports-table">
+              {renderReportContent()}
+            </div>
+            <div className="reports-graph">
+              {selectedReport === "alquileres" && renderAlquileresChart()}
+              {selectedReport === "canceladas" && renderCanceladasChart()}
+              {selectedReport === "ranking" && renderRankingChart()}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
