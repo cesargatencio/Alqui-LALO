@@ -21,6 +21,7 @@ import ReservasPage from "./pages/ReservasPage";
 import EspacioDetalle from "./pages/EspacioDetalle";
 import ConfirmarReserva from "./pages/ConfirmarReserva";
 import ReportsPage from "./pages/ReportsPage"; // Agrega esta línea
+import AgregarEspacio from "./pages/AgregarEspacio";
 
 import LandingCTA from "./components/LandingCTA/LandingCTA";
 import Features from "./components/Features/Features";
@@ -84,6 +85,14 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <ReportsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/agregar-espacio"
+            element={
+              <ProtectedRoute adminOnly>
+                <AgregarEspacio />
               </ProtectedRoute>
             }
           />
