@@ -1,61 +1,51 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import AuthService from "../services/AuthSingleton";
+import React, { useState, useEffect } from "react";
+import FilterBar from "../components/FilterBar/FilterBar";
 import EspacioCard from "../components/EspacioCard/EspacioCard";
-import espaciosData from "../data/espacios.json";  // Importa el JSON
+import { buscarEspacios, espaciosDisponibles } from "../services/EspacioService";
 import "./CatalogoPage.css";
 
+export default function CatalogoPage() {
+  const [filtros, setFiltros] = useState({
+    capacidad: "",
+    tipo: "",
+    ubicacion: "",
+    desde: "",
+    hasta: ""
+  });
+  const [espacios, setEspacios] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-const CatalogoPage = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    setLoading(true);
+    // Si hay fechas definidas, usamos disponibilidad
+    const fn = filtros.desde && filtros.hasta ? espaciosDisponibles : buscarEspacios;
+    fn(filtros)
+      .then(data => setEspacios(data))
+      .finally(() => setLoading(false));
+  }, [filtros]);
 
-  const user = AuthService.getInstance().getCurrentUser();
-  const isAdmin = AuthService.isAdmin(user);
-
-  const espaciosPequenos = espaciosData.filter(e => e.capacidadNum <= 30);
-  const espaciosMedianos = espaciosData.filter(e => e.capacidadNum > 30 && e.capacidadNum <= 100);
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFiltros(prev => ({ ...prev, [name]: value }));
+  };
 
   return (
     <div className="catalogo-container">
-      {/* Botón solo para admin */}
-      {isAdmin && (
-        <Link to="/agregar-espacio" className="btn-agregar-espacio">
-          Agregar Espacio
-        </Link>
+      <h1>Catálogo de Espacios</h1>
+
+      <FilterBar filtros={filtros} onChange={handleChange} />
+
+      {loading ? (
+        <p>Cargando espacios…</p>
+      ) : (
+        <div className="catalogo-grid">
+          {espacios.length > 0 ? (
+            espacios.map(e => <EspacioCard key={e.id} espacio={e} />)
+          ) : (
+            <p>No se encontraron espacios.</p>
+          )}
+        </div>
       )}
-      <h1>Los mejores espacios para ti</h1>
-      
-      {/* Sección Salones (30-50) */}
-      <h2 className="categoria-title">Salones (30-50 personas)</h2>
-      <div className="catalogo-grid">
-        {espaciosMedianos
-          .filter(e => e.capacidadNum <= 50)
-          .map((espacio) => (
-            <EspacioCard key={espacio.id} espacio={espacio} />
-          ))}
-      </div>
-
-      {/* Sección Auditorios (50-80) */}
-      <h2 className="categoria-title">Auditorios (50-80 personas)</h2>
-      <div className="catalogo-grid">
-        {espaciosMedianos
-          .filter(e => e.capacidadNum > 50)
-          .map((espacio) => (
-            <EspacioCard key={espacio.id} espacio={espacio} />
-          ))}
-      </div>
-
-      {/* Sección Espacios Recreativos */}
-      <h2 className="categoria-title">Espacios recreativos</h2>
-      <div className="catalogo-grid">
-        {espaciosPequenos.map((espacio) => (
-          <EspacioCard key={espacio.id} espacio={espacio} />
-        ))}
-      </div>
     </div>
   );
-};
-
-export default CatalogoPage;
+}
