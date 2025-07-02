@@ -5,8 +5,8 @@ import "./EspacioDetalle.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import AuthService from "../services/AuthSingleton";
 
 const EspacioDetalle = () => {
@@ -62,7 +62,10 @@ const EspacioDetalle = () => {
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
   const [horaSeleccionada, setHoraSeleccionada] = useState("");
   const [duracionSeleccionada, setDuracionSeleccionada] = useState("");
+  const [editando, setEditando] = useState(false);
+  const [espacioEditado, setEspacioEditado] = useState({ ...espacio });
   const usuario = AuthService.getInstance().getCurrentUser();
+  const isAdmin = AuthService.isAdmin(usuario);
 
   const enviarReseña = async () => {
     if (rating === 0 || comentario.trim() === "") {
@@ -113,6 +116,18 @@ const EspacioDetalle = () => {
     return llenas + vacías;
   };
 
+  const handleGuardarCambios = async (e) => {
+    e.preventDefault();
+    try {
+      const docRef = doc(db, "espacios", String(espacio.id));
+      await updateDoc(docRef, espacioEditado);
+      alert("Espacio actualizado correctamente");
+      setEditando(false);
+      // Opcional: recarga los datos o navega
+    } catch (error) {
+      alert("Error al actualizar el espacio: " + error.message);
+    }
+  };
   
   useEffect(() => {
     const cargarReseñas = async () => {
@@ -301,6 +316,31 @@ const EspacioDetalle = () => {
           </Link>
         </div>
       </div>
+
+      {/* Botón de editar SOLO para admin, al fondo de la página */}
+      {isAdmin && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "2rem" }}>
+          {!editando ? (
+            <button
+              className="btn-editar-espacio"
+              onClick={() => setEditando(true)}
+            >
+              Editar Espacio
+            </button>
+          ) : (
+            <form onSubmit={handleGuardarCambios} style={{ display: "flex", gap: "1rem" }}>
+              <input
+                type="text"
+                value={espacioEditado.nombre}
+                onChange={e => setEspacioEditado({ ...espacioEditado, nombre: e.target.value })}
+              />
+              {/* Repite para los demás campos */}
+              <button type="submit">Guardar Cambios</button>
+              <button type="button" onClick={() => setEditando(false)}>Cancelar</button>
+            </form>
+          )}
+        </div>
+      )}
     </div>
   );
 };
