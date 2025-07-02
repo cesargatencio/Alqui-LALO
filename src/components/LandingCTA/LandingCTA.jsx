@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./LandingCTA.css";
 
 const LandingCTA = () => {
@@ -9,7 +10,7 @@ const LandingCTA = () => {
         Alquila salones, estudios o áreas para cualquier ocasión de forma
         rápida, segura y sin complicaciones.
       </p>
-      <button className="cta-button">Explorar espacios</button>
+      <Link to="/catalogo" className="cta-button">Explorar espacios</Link>
     </section>
   );
 };

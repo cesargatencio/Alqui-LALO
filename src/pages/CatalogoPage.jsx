@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EspacioCard from "../components/EspacioCard/EspacioCard";
 import espaciosData from "../data/espacios.json";  // Importa el JSON
 import "./CatalogoPage.css";
 
 
 const CatalogoPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const espaciosPequenos = espaciosData.filter(e => e.capacidadNum <= 30);
   const espaciosMedianos = espaciosData.filter(e => e.capacidadNum > 30 && e.capacidadNum <= 100);
 
