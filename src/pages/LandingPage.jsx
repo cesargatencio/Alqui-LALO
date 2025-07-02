@@ -34,7 +34,6 @@ const LandingPage = () => {
 
   return (
     <section className="fold">
-      {/* Carousel de fondo */}
       <div className="background-carousel">
         <Slider autoplay autoplaySpeed={4000} speed={700} infinite arrows dots pauseOnHover={false}>
           <div><img src="/img/img3.jpg" alt="Slide 1" /></div>
@@ -51,31 +50,19 @@ const LandingPage = () => {
       </p>
 
       <form className="search-bar" onSubmit={handleBuscar}>
+        <div className="search-group">
+          <label>
+            Fecha inicio
+            <input type="date" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} required />
+          </label>
+          <label>
+            Fecha fin
+            <input type="date" value={fechaFin} onChange={e => setFechaFin(e.target.value)} required />
+          </label>
+        </div>
         <label>
-          Fecha inicio:
-          <input
-            type="date"
-            value={fechaInicio}
-            onChange={e => setFechaInicio(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Fecha fin:
-          <input
-            type="date"
-            value={fechaFin}
-            onChange={e => setFechaFin(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Duración:
-          <select
-            value={duracion}
-            onChange={e => setDuracion(e.target.value)}
-            required
-          >
+          Duración
+          <select value={duracion} onChange={e => setDuracion(e.target.value)} required>
             <option disabled value="">Selecciona duración</option>
             <option value="60">1 hora</option>
             <option value="90">1.5 horas</option>
@@ -96,12 +83,8 @@ const LandingPage = () => {
           </select>
         </label>
         <label>
-          Capacidad máxima:
-          <select
-            value={capacidad}
-            onChange={e => setCapacidad(e.target.value)}
-            required
-          >
+          Capacidad máxima
+          <select value={capacidad} onChange={e => setCapacidad(e.target.value)} required>
             <option disabled value="">Selecciona rango</option>
             <option value="10-30">10 - 30</option>
             <option value="31-50">31 - 50</option>
@@ -117,4 +100,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
 
