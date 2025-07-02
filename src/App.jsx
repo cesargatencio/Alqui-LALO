@@ -20,6 +20,7 @@ import ModificarUsuario from "./pages/ModificarUsuario";
 import ReservasPage from "./pages/ReservasPage";
 import EspacioDetalle from "./pages/EspacioDetalle";
 import ConfirmarReserva from "./pages/ConfirmarReserva"; // ✅
+import ReportsPage from "./pages/ReportsPage"; // Agrega esta línea
 
 import LandingCTA from "./components/LandingCTA/LandingCTA";
 import Features from "./components/Features/Features";
@@ -68,6 +69,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ReservasPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reportes"
+            element={
+              <ProtectedRoute adminOnly>
+                <ReportsPage />
               </ProtectedRoute>
             }
           />

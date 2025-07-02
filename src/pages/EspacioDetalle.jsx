@@ -7,7 +7,7 @@ import "react-calendar/dist/Calendar.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useAuth } from "../hooks/useAuth"; // Si tienes un hook para el usuario actual
+import AuthService from "../services/AuthSingleton";
 
 const EspacioDetalle = () => {
   const { id } = useParams();
@@ -62,7 +62,7 @@ const EspacioDetalle = () => {
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
   const [horaSeleccionada, setHoraSeleccionada] = useState(""); // Nuevo estado para hora
   const [duracionSeleccionada, setDuracionSeleccionada] = useState(""); // Nuevo estado para duración
-  const usuario = useAuth ? useAuth() : null; // O usa tu singleton para obtener el usuario
+  const usuario = AuthService.getInstance().getCurrentUser();
 
   const enviarReseña = async () => {
     if (rating === 0 || comentario.trim() === "") {

@@ -12,6 +12,16 @@ class AuthService {
     return AuthService.instance;
   }
 
+  static adminEmails = [
+    "c.atencio@correo.unimet.edu.ve",
+    "salvador@unimet.edu.ve",
+    // agrega aquí más si lo necesitas
+  ];
+
+  static isAdmin(user) {
+    return user?.email && AuthService.adminEmails.includes(user.email);
+  }
+
   getCurrentUser() {
     return auth.currentUser;
   }
@@ -65,6 +75,14 @@ class AuthService {
 
   async saveUserData(uid, data) {
     await setDoc(doc(db, "usuarios", uid), data, { merge: true });
+  }
+
+  onAuthStateChanged(callback) {
+    return auth.onAuthStateChanged(callback);
+  }
+
+  async logout() {
+    await auth.signOut();
   }
 }
 

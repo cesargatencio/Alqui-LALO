@@ -77,7 +77,7 @@ const LoginPage = () => {
               name="correo"
               value={formData.correo}
               onChange={handleChange}
-              placeholder="ejemplo@unimet.edu.ve"
+              placeholder="ejemplo@correo.unimet.edu.ve"
               required
               onInvalid={e => e.target.classList.add("input-error")}
               onInput={e => e.target.classList.remove("input-error")}

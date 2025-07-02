@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../../firebase";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import AuthService from "../../services/AuthSingleton";
 import "./Header.css";
 
 const Header = () => {
@@ -12,19 +11,18 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = AuthService.getInstance().onAuthStateChanged((firebaseUser) => {
       setUser(firebaseUser);
     });
     return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.removeItem("usuario");
+    await AuthService.getInstance().logout();
     navigate("/");
   };
 
-const handleContactClick = (e) => {
+  const handleContactClick = (e) => {
     e.preventDefault();
     if (location.pathname === "/" || location.pathname === "/index.html") {
       const contactSection = document.getElementById("contact-section");
@@ -36,6 +34,8 @@ const handleContactClick = (e) => {
     }
   };
 
+  const isAdmin = user && AuthService.isAdmin(user);
+
   return (
     <header className="header">
       <div className="logo">AlquiLALO</div>
@@ -44,11 +44,13 @@ const handleContactClick = (e) => {
         <Link to="/catalogo">Catálogo</Link>
         <a href="/#contact-section" onClick={handleContactClick}>Contacto</a>
         {user && (
-  <Link to="/mis-reservas">
-    Reservas
-  </Link>
-)}
-
+          <Link to="/mis-reservas">
+            Reservas
+          </Link>
+        )}
+        {isAdmin && (
+          <Link to="/reportes">Reportes</Link>
+        )}
       </nav>
       <div className="auth-buttons">
         {!isAuthPage && (user ? (
