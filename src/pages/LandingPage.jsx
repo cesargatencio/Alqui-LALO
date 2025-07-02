@@ -1,3 +1,4 @@
+// src/pages/LandingPage.jsx
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ const LandingPage = () => {
   const [capacidad, setCapacidad] = useState("");
   const navigate = useNavigate();
 
-  // Scroll suave a sección Contacto
+  // Scroll suave a sección Contacto si aplica
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("scrollToContact") === "true") {
@@ -98,50 +99,107 @@ const LandingPage = () => {
           Buscar
         </button>
       </form>
-
-      {/* Sección de características */}
-      <div className="features-overview">
-        <h2>¿Por qué AlquiLALO?</h2>
-        <div className="features-grid">
-          <div className="feature-card">
-            <img src="/icons/search.svg" alt="Búsqueda inteligente" />
-            <h3>Búsqueda inteligente</h3>
-            <p>Filtra por fecha, hora y capacidad en un solo paso.</p>
-          </div>
-          <div className="feature-card">
-            <img src="/icons/clock.svg" alt="Disponibilidad en tiempo real" />
-            <h3>Disponibilidad en tiempo real</h3>
-            <p>Solo te mostramos los espacios libres en tu rango seleccionado.</p>
-          </div>
-          <div className="feature-card">
-            <img src="/icons/lock.svg" alt="Reservas seguras" />
-            <h3>Reservas seguras</h3>
-            <p>Tus datos y pagos protegidos con cifrado SSL.</p>
-          </div>
-          <div className="feature-card">
-            <img src="/icons/support.svg" alt="Soporte 24/7" />
-            <h3>Soporte 24/7</h3>
-            <p>Nuestro equipo siempre listo para ayudarte.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Sección de contacto */}
-      <section id="contact-section" className="contact-section">
-        <h2>Contacto</h2>
-        <form className="contact-form">
-          <input type="text" placeholder="Tu nombre" required />
-          <input type="email" placeholder="Tu correo" required />
-          <textarea placeholder="Mensaje" rows={4} required />
-          <button type="submit">Enviar</button>
-        </form>
-      </section>
     </section>
   );
 };
 
 export default LandingPage;
 
+/* src/pages/LandingPage.css */
+.fold {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #f2f2f2;
+  padding: 0 20px;
+  overflow: visible;
+}
+
+.slick-arrow {
+  display: block !important;
+  z-index: 10 !important;
+  opacity: 1 !important;
+  color: black;
+  width: 100px;
+  height: 100px;
+}
+
+.slick-prev { left: 10px !important; }
+.slick-next { right: 10px !important; }
+
+.background-carousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.background-carousel img {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 0.5;
+}
+
+.fold > *:not(.background-carousel) {
+  position: relative;
+  z-index: 2;
+}
+
+.fold h1 {
+  font-size: 48px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.fold p { font-size: 18px; margin-bottom: 32px; }
+.bold-text { font-weight: bold; }
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 18px;
+  background-color: #fff;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.search-bar input,
+.search-bar select {
+  padding: 10px 16px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 32px;
+  outline: none;
+  min-width: 160px;
+  appearance: none;
+}
+
+.cta-button {
+  padding: 10px 30px;
+  background-color: #FF6D04;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover { background-color: #e95f00; }
 
 
 
