@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import data from "../data/espacios.json";
 import "./EspacioDetalle.css";
 import Calendar from "react-calendar";
@@ -60,8 +60,8 @@ const EspacioDetalle = () => {
   });
   const [verTodas, setVerTodas] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
-  const [horaSeleccionada, setHoraSeleccionada] = useState(""); // Nuevo estado para hora
-  const [duracionSeleccionada, setDuracionSeleccionada] = useState(""); // Nuevo estado para duración
+  const [horaSeleccionada, setHoraSeleccionada] = useState("");
+  const [duracionSeleccionada, setDuracionSeleccionada] = useState("");
   const usuario = AuthService.getInstance().getCurrentUser();
 
   const enviarReseña = async () => {
@@ -113,6 +113,7 @@ const EspacioDetalle = () => {
     return llenas + vacías;
   };
 
+  
   useEffect(() => {
     const cargarReseñas = async () => {
       try {
@@ -146,26 +147,9 @@ const EspacioDetalle = () => {
           <p><strong>Espacio:</strong> {espacio.capacidad}</p>
           <p><strong>Descripción:</strong> {espacio.descripcion}</p>
           <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
-          <button
-            className="btn-alquilar"
-            disabled={!fechaSeleccionada || !horaSeleccionada || !duracionSeleccionada}
-            onClick={() => {
-              navigate("/confirmar-reserva", {
-                state: {
-                  espacio,
-                  fecha: fechaSeleccionada,
-                  hora: horaSeleccionada,
-                  duracion: duracionSeleccionada,
-                  usuario, // si quieres pasar el usuario actual
-                },
-              });
-            }}
-          >
-            ALQUILAR
-          </button>
         </div>
       </div>
-
+    
       <div className="espacio-extra">
         <div className="extra-box">
           <h3>Calendario de disponibilidad</h3>
@@ -265,6 +249,57 @@ const EspacioDetalle = () => {
         <ul>
           <li>No hay eventos programados aún.</li>
         </ul>
+      </div>
+
+      <div className="reserva-seccion">
+        <h3>Realiza tu reserva</h3>
+
+        <div className="reserva-form">
+          <select
+            value={horaSeleccionada}
+            onChange={e => setHoraSeleccionada(e.target.value)}
+          >
+            <option value="">Selecciona hora</option>
+            <option value="08:00">08:00</option>
+            <option value="10:00">10:00</option>
+            <option value="12:00">12:00</option>
+            <option value="14:00">14:00</option>
+            <option value="16:00">16:00</option>
+          </select>
+
+          <select
+            value={duracionSeleccionada}
+            onChange={e => setDuracionSeleccionada(e.target.value)}
+          >
+            <option value="">Duración</option>
+            <option value="45 minutos">45 minutos</option>
+            <option value="1 hora 30 min">1 hora 30 min</option>
+            <option value="2 horas">2 horas</option>
+            <option value="3 horas">3 horas</option>
+            <option value="6 horas">6 horas</option>
+            <option value="12 horas">12 horas</option>
+            <option value="24 horas">24 horas</option>
+          </select>
+
+          <Link
+            to="/confirmar-reserva"
+            state={{
+              espacio: {
+                id: espacio.id,
+                nombre: espacio.nombre,
+                precio: espacio.precio,
+                // agrega solo lo necesario
+              },
+              fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
+              hora: horaSeleccionada,
+              duracion: duracionSeleccionada,
+              usuario: usuario ? { email: usuario.email, uid: usuario.uid } : null,
+            }}
+            className="btn-alquilar"
+          >
+            ALQUILAR
+          </Link>
+        </div>
       </div>
     </div>
   );

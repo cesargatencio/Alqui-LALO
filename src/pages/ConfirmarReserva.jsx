@@ -27,7 +27,7 @@ const ConfirmarReserva = () => {
     <div style={{ padding: "2rem", textAlign: "center" }}>
       <h2>Confirmar Reserva</h2>
       <p><strong>Espacio:</strong> {espacio.nombre}</p>
-      <p><strong>Fecha:</strong> {fecha.toLocaleDateString ? fecha.toLocaleDateString() : fecha}</p>
+      <p><strong>Fecha:</strong> {fecha ? new Date(fecha).toLocaleDateString() : ""}</p>
       <p><strong>Hora:</strong> {hora}</p>
       <p><strong>Duración:</strong> {duracion}</p>
       <p><strong>Monto a pagar:</strong> ${montoReserva}</p>

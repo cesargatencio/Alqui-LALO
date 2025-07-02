@@ -19,7 +19,7 @@ import CatalogoPage from "./pages/CatalogoPage";
 import ModificarUsuario from "./pages/ModificarUsuario";
 import ReservasPage from "./pages/ReservasPage";
 import EspacioDetalle from "./pages/EspacioDetalle";
-import ConfirmarReserva from "./pages/ConfirmarReserva"; // ✅
+import ConfirmarReserva from "./pages/ConfirmarReserva";
 import ReportsPage from "./pages/ReportsPage"; // Agrega esta línea
 
 import LandingCTA from "./components/LandingCTA/LandingCTA";
@@ -52,7 +52,14 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/catalogo" element={<CatalogoPage />} />
           <Route path="/espacios/:id" element={<EspacioDetalle />} />
-          <Route path="/confirmar-reserva" element={<ConfirmarReserva />} /> {/* ✅ PayPal */}
+          <Route
+            path="/confirmar-reserva"
+            element={
+              <ProtectedRoute>
+                <ConfirmarReserva />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
 
           {/* Rutas protegidas */}
