@@ -16,32 +16,32 @@ const Testimonials = () => {
       name: "Ana R.",
       role: "Profesora UNIMET",
       feedback: "Me encantó la interfaz. Muy mínima y práctica.",
-      photo: profile4
+      photo: profile4,
     },
     {
       name: "Carlos M.",
       role: "Organizador de Eventos",
       feedback: "Logré alquilar en minutos. Todo perfecto.",
-      photo: profile2
+      photo: profile2,
     },
     {
       name: "María G.",
       role: "Estudiante",
       feedback: "La plataforma es intuitiva y ahorra mucho tiempo.",
-      photo: profile3
+      photo: profile3,
     },
     {
       name: "Luis P.",
       role: "Administrador",
       feedback: "Excelente servicio de atención al cliente.",
-      photo: profile1
-    }
+      photo: profile1,
+    },
   ];
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
-    speed: 500,
+    speed: 1200,
     slidesToShow: 2,
     slidesToScroll: 1,
     autoplay: true,
@@ -49,26 +49,26 @@ const Testimonials = () => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1
-        }
-      }
-    ]
+          slidesToShow: 1,
+        },
+      },
+    ],
   };
 
   return (
     <section className="testimonials-section">
       <div className="testimonials-container">
         <h2>Testimonios</h2>
-        
+
         <Slider {...settings} className="testimonials-slider">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="testimonial-card">
               <div className="testimonial-content">
                 <p className="testimonial-text">"{testimonial.feedback}"</p>
                 <div className="testimonial-author">
-                  <img 
-                    src={testimonial.photo} 
-                    alt={testimonial.name} 
+                  <img
+                    src={testimonial.photo}
+                    alt={testimonial.name}
                     className="author-photo"
                   />
                   <div>
