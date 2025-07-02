@@ -1,0 +1,58 @@
+import { db } from "../firebase";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs
+} from "firebase/firestore";
+
+const espaciosCol = collection(db, "espacios");
+
+/**
+ * Busca espacios según filtros básicos (capacidad, tipo, ubicación)
+ * @param {Object} filtros - { capacidad, tipo, ubicacion }
+ */
+export async function buscarEspacios(filtros) {
+  let q = query(espaciosCol);
+
+  if (filtros.capacidad) {
+    q = query(q, where("capacidad", ">=", Number(filtros.capacidad)));
+  }
+  if (filtros.tipo) {
+    q = query(q, where("tipo", "==", filtros.tipo));
+  }
+  if (filtros.ubicacion) {
+    q = query(q, where("ubicacion", "==", filtros.ubicacion));
+  }
+  // Orden por precio
+  q = query(q, orderBy("precioHora", "asc"));
+
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Obtiene espacios disponibles en un rango de tiempo y según filtros
+ * @param {Object} filtros - { desde, hasta, capacidad, tipo, ubicacion }
+ */
+export async function espaciosDisponibles(filtros) {
+  const { desde, hasta, ...rest } = filtros;
+  const todos = await buscarEspacios(rest);
+  const disponibles = [];
+
+  for (let espacio of todos) {
+    const reservasQ = query(
+      collection(db, "reservas"),
+      where("espacioId", "==", espacio.id),
+      where("desde", "<", filtros.hasta),
+      where("hasta", ">", filtros.desde)
+    );
+    const snap = await getDocs(reservasQ);
+    if (snap.empty) {
+      disponibles.push(espacio);
+    }
+  }
+
+  return disponibles;
+}
