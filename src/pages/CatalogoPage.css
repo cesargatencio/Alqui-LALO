@@ -1,140 +1,85 @@
 .catalogo-container {
-  padding: 1.5rem 2rem;
-  background-color: #f2f4f8;
-  min-height: 100vh ; 
-  position: relative;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .catalogo-container h1 {
-  text-align: center;
-  color: #003366;
-  margin-bottom: 2rem;
   font-size: 2.2rem;
-  font-weight: 700 ;
+  margin-bottom: 1rem;
+  color: #2c3e50;
 }
 
-.catalogo-subtitle {
-  text-align: center ;
-  color: #555;
-  margin-bottom: 2rem;
-  font-style: italic;
+.btn-agregar-espacio {
+  display: inline-block;
+  background: #5c6ac4;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin-bottom: 1rem;
+}
+
+.btn-agregar-espacio:hover {
+  background: #4a55a1;
 }
 
 .catalogo-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 1.2rem; 
-  margin: 0 auto 2rem;
-  max-width: 3000px; 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
-
+/* Mejora visual de EspacioCard */
 .espacio-card {
-  width: 300px;
-  height: 470px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  text-align: center;
-  transition: transform 0.2s ease;
 }
 
-
-
 .espacio-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
 
 .espacio-card img {
   width: 100%;
-  height: 200px;
+  height: 160px;
   object-fit: cover;
-  border-radius: 12px 12px 0 0;
-  margin-bottom: 1rem;
 }
 
-
 .espacio-card h3 {
-  color: #003366;
-  margin-top: 1rem;
+  margin: 0.8rem 1rem 0.4rem;
+  font-size: 1.2rem;
+  color: #2c3e50;
 }
 
 .espacio-card p {
-  margin: 0.4rem 0;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  margin: 0 1rem 0.6rem;
+  color: #555;
+  font-size: 0.95rem;
+  flex-grow: 1;
 }
 
-
 .espacio-card button {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #ff8800;
+  margin: 0.8rem 1rem 1rem;
+  padding: 0.6rem;
+  background: #5c6ac4;
+  color: #fff;
   border: none;
-  color: white;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s;
+  transition: background 0.2s;
 }
 
 .espacio-card button:hover {
-  background-color: #ffa733;
-}
-
-.categoria-title {
-  margin: 2rem 0 1rem;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #2c3e50;
-  position: relative;
-  padding-left: 1rem;
-}
-
-.categoria-title::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 70%;
-  width: 4px;
-  background: #ff8800;
-  border-radius: 2px;
-}
-
-/* Agrega esto para precios destacados */
-.precio-destacado {
-  font-weight: bold;
-  color: #ff8800;
-  font-size: 1.1rem;
-  margin: 0.5rem 0;
-}
-
-.btn-agregar-espacio {
-  position: absolute;
-  top: 80px;      /* <-- antes 30px */
-  right: 40px;
-  background: #007bff;
-  color: #fff;
-  padding: 0.7rem 1.3rem;
-  border-radius: 6px;
-  font-weight: bold;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  transition: background 0.2s;
-  z-index: 10;
-}
-.btn-agregar-espacio:hover {
-  background: #0056b3;
+  background: #4a55a1;
 }
 
