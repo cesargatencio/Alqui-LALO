@@ -59,11 +59,6 @@ export default function CatalogoPage() {
 
   return (
     <div className="catalogo-container">
-      {isAdmin && (
-        <Link to="/agregar-espacio" className="btn-agregar-espacio">
-          Agregar Espacio
-        </Link>
-      )}
       <h1>Catálogo de Espacios</h1>
 
       {/* Filtros dinámicos */}
@@ -89,6 +84,15 @@ export default function CatalogoPage() {
             <p className="no-results">No se encontraron espacios.</p>
           )}
         </>
+      )}
+
+      {/* Botón para agregar espacio, solo visible para admin y centrado abajo */}
+      {isAdmin && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
+          <Link to="/agregar-espacio" className="btn-agregar-espacio">
+            Agregar Espacio
+          </Link>
+        </div>
       )}
     </div>
   );

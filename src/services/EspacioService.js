@@ -1,6 +1,7 @@
 import { db } from "../firebase";
 import {
   collection,
+  addDoc,
   query,
   where,
   orderBy,
@@ -55,4 +56,14 @@ export async function espaciosDisponibles(filtros) {
   }
 
   return disponibles;
+}
+
+/**
+ * Agrega un nuevo espacio a la colección "espacios"
+ * @param {Object} espacio - { nombre, descripcion, capacidad, precio, imagen, imagenPath }
+ */
+export async function addEspacio(espacio) {
+  const espaciosCol = collection(db, "espacios");
+  const docRef = await addDoc(espaciosCol, espacio);
+  return docRef.id;
 }

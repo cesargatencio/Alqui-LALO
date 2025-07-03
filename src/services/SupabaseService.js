@@ -57,7 +57,14 @@ export function getUserImageUrl(path) {
 export async function uploadEspacioImage(path, file) {
   const { data, error } = await supabase.storage.from(BUCKET_ESPACIO).upload(path, file);
   if (error) throw error;
-  return data;
+
+  const { data: urlData, error: urlError } = supabase
+    .storage
+    .from(BUCKET_ESPACIO)
+    .getPublicUrl(path);
+  if (urlError) throw urlError;
+
+  return { path: data.path, publicUrl: urlData.publicUrl };
 }
 
 export function getEspacioImageUrl(path) {
