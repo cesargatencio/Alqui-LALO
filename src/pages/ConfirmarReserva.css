@@ -1,0 +1,68 @@
+.conf-reserva-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #faf9f6;
+  padding-top: 60px;
+}
+
+.conf-reserva-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.conf-reserva-info p {
+  margin: 0.7rem 0;
+  font-size: 1.08rem;
+}
+
+.conf-reserva-paypal {
+  margin: 2.2rem 0 1.2rem 0;
+}
+
+.conf-reserva-btn {
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.9rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.conf-reserva-btn:hover {
+  background: #ff9800;
+}
+
+.conf-reserva-btn-rojo {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.9rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+  display: block;
+  width: 100%;
+}
+.conf-reserva-btn-rojo:hover {
+  background: #b71c1c;
+}
+
+.conf-reserva-error {
+  color: #b00;
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 1.2rem;
+}
