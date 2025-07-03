@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./ModificarUsuario.css";
 import { useNavigate } from "react-router-dom";
 import { updatePassword, EmailAuthProvider, linkWithCredential } from "firebase/auth";
 import AuthService from "../services/AuthSingleton";
+import { uploadUserImage, getUserImageUrl } from "../services/SupabaseService";
 
 const ModificarUsuario = () => {
   const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
@@ -17,6 +18,8 @@ const ModificarUsuario = () => {
     fechaNacimiento: usuarioGuardado?.fechaNacimiento || "",
     password: "",
     confirmarPassword: "",
+    fotoPerfil: usuarioGuardado?.fotoPerfil || "", // URL (opcional)
+    fotoPerfilPath: usuarioGuardado?.fotoPerfilPath || "", // PATH (importante)
   });
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -24,8 +27,41 @@ const ModificarUsuario = () => {
   const [avatar, setAvatar] = useState(null);
   const fileInputRef = useRef();
 
+  // Al cargar, si hay fotoPerfilPath, obtener el URL público
+  useEffect(() => {
+    if (formData.fotoPerfilPath) {
+      const publicUrl = getUserImageUrl(formData.fotoPerfilPath);
+      setAvatar(publicUrl);
+    } else if (formData.fotoPerfil) {
+      setAvatar(formData.fotoPerfil);
+    } else {
+      setAvatar(null);
+    }
+  }, [formData.fotoPerfilPath, formData.fotoPerfil]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Maneja la selección de imagen y sube a Supabase
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Preview local
+      const reader = new FileReader();
+      reader.onload = (ev) => setAvatar(ev.target.result);
+      reader.readAsDataURL(file);
+
+      // Usa extensión correcta
+      const extension = file.name.split('.').pop();
+      const path = `perfil/${usuarioGuardado.uid || usuarioGuardado.id || usuarioGuardado.correo}_${Date.now()}.${extension}`;
+      const { publicUrl, path: savedPath } = await uploadUserImage(path, file);
+      setFormData((prev) => ({
+        ...prev,
+        fotoPerfilPath: savedPath,
+        fotoPerfil: publicUrl,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -60,10 +96,16 @@ const ModificarUsuario = () => {
         correo: formData.correo,
         telefono: formData.telefono,
         fechaNacimiento: formData.fechaNacimiento,
+        fotoPerfilPath: formData.fotoPerfilPath || usuarioGuardado.fotoPerfilPath || "",
+        fotoPerfil: formData.fotoPerfil || usuarioGuardado.fotoPerfil || "",
       };
 
       // Usa el singleton para guardar los datos en Firestore
       await authService.saveUserData(uid, nuevosDatos);
+
+      // Actualiza localStorage con los nuevos datos
+      const usuarioActualizado = { ...usuarioGuardado, ...nuevosDatos };
+      localStorage.setItem("usuario", JSON.stringify(usuarioActualizado));
 
       // Si cambió la contraseña, actualízala y linkea solo si no está ya vinculado
       if (formData.password && formData.password === formData.confirmarPassword) {
@@ -91,15 +133,6 @@ const ModificarUsuario = () => {
     fileInputRef.current.click();
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => setAvatar(ev.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="modificar-usuario-container">
       <form className="modificar-usuario-form" onSubmit={handleSubmit}>
@@ -118,7 +151,7 @@ const ModificarUsuario = () => {
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           ) : (
-            formData.nombre ? formData.nombre[0].toUpperCase() : ""
+            formData.correo ? formData.correo[0].toUpperCase() : ""
           )}
           <input
             type="file"

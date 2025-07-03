@@ -33,6 +33,8 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 3. npm install
 npm install chart.js 
 npm install react-chartjs-2
+npm install @supabase/supabase-js
+
 4. npm run dev
 
 Configuración de Administradores
