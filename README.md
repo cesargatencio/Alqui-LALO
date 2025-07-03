@@ -31,6 +31,8 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 1. git clone https://github.com/cesargatencio/Alqui-LALO
 2. cd alquilalo
 3. npm install
+npm install chart.js 
+npm install react-chartjs-2
 4. npm run dev
 
 Configuración de Administradores
