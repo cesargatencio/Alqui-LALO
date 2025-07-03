@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthSingleton";
+import { getUserImageUrl } from "../../services/SupabaseService";
 import "./Header.css";
 
 const Header = () => {
@@ -9,6 +10,7 @@ const Header = () => {
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
 
   const [user, setUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
     const unsubscribe = AuthService.getInstance().onAuthStateChanged((firebaseUser) => {
@@ -16,6 +18,18 @@ const Header = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  // Este efecto se dispara cada vez que cambias de ruta
+  useEffect(() => {
+    const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
+    if (usuarioLocal?.fotoPerfilPath) {
+      setAvatarUrl(getUserImageUrl(usuarioLocal.fotoPerfilPath));
+    } else if (usuarioLocal?.fotoPerfil) {
+      setAvatarUrl(usuarioLocal.fotoPerfil);
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [location]);
 
   const handleLogout = async () => {
     await AuthService.getInstance().logout();
@@ -55,15 +69,29 @@ const Header = () => {
       <div className="auth-buttons">
         {!isAuthPage && (user ? (
             <>
-             
               <button
                 className="user-circle-btn"
                 title="Modificar usuario"
                 onClick={() => navigate("/modificarusuario")}
+                style={{ padding: 0, border: "none", background: "none" }}
               >
-                {user.displayName
-                  ? user.displayName.charAt(0).toUpperCase()
-                  : (user.email ? user.email.charAt(0).toUpperCase() : "U")}
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      display: "block"
+                    }}
+                  />
+                ) : (
+                  user.displayName
+                    ? user.displayName.charAt(0).toUpperCase()
+                    : (user.email ? user.email.charAt(0).toUpperCase() : "U")
+                )}
               </button>
               <button className="login-btn" onClick={handleLogout}>
                 Cerrar Sesión

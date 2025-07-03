@@ -18,8 +18,8 @@ const ModificarUsuario = () => {
     fechaNacimiento: usuarioGuardado?.fechaNacimiento || "",
     password: "",
     confirmarPassword: "",
-    fotoPerfil: usuarioGuardado?.fotoPerfil || "", // URL (opcional)
-    fotoPerfilPath: usuarioGuardado?.fotoPerfilPath || "", // PATH (importante)
+    fotoPerfil: usuarioGuardado?.fotoPerfil || "",
+    fotoPerfilPath: usuarioGuardado?.fotoPerfilPath || "",
   });
 
   const [successMessage, setSuccessMessage] = useState("");
