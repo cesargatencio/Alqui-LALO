@@ -14,7 +14,13 @@ const espaciosCol = collection(db, "espacios");
  * Busca espacios según filtros básicos (capacidad, tipo, ubicación)
  * @param {Object} filtros - { capacidad, tipo, ubicacion }
  */
-export async function buscarEspacios(filtros) {
+export async function buscarEspacios(filtros = {}) {
+  // Si no hay filtros, trae todo sin ordenar
+  if (!filtros || Object.values(filtros).every(v => !v)) {
+    const snap = await getDocs(espaciosCol);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
   let q = query(espaciosCol);
 
   if (filtros.capacidad) {
@@ -26,8 +32,8 @@ export async function buscarEspacios(filtros) {
   if (filtros.ubicacion) {
     q = query(q, where("ubicacion", "==", filtros.ubicacion));
   }
-  // Orden por precio
-  q = query(q, orderBy("precioHora", "asc"));
+  // Ordena solo si el campo existe en todos los docs, si no, comenta esta línea:
+  // q = query(q, orderBy("precioHora", "asc"));
 
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
