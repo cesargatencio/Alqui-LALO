@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaypalButton from "../components/PaypalButton/PaypalButton";
 import ReservaService from "../services/ReservaFacade";
-import "./ConfirmarReserva.css"; // Asegúrate de crear este archivo
+import "./ConfirmarReserva.css"; 
 
 const reservaService = ReservaService.getInstance();
 
@@ -21,14 +21,48 @@ const ConfirmarReserva = () => {
   const reservaId = `${espacio.id}_${fecha}_${hora}`;
 
   const handlePagoExitoso = async (detalles) => {
-    await reservaService.confirmarPago(reservaId, detalles);
+    await reservaService.crearReserva({
+      espacioId: espacio.id,
+      usuarioId: usuario.uid,
+      fecha,
+      hora,
+      monto: montoReserva,
+      detalles: {
+        duracion,
+        nombreEspacio: espacio.nombre,
+        imagenEspacio: espacio.imagenURL // o el nombre correcto del campo
+      }
+    });
+
+    await reservaService.confirmarPago(`${espacio.id}_${fecha}_${hora}`, detalles);
     navigate("/mis-reservas");
   };
 
-  const handleConfirmar = () => {
-    alert("Reserva confirmada (simulación). Aquí puedes agregar lógica adicional.");
-    // Aquí podrías llamar a handlePagoExitoso o tu lógica de confirmación
+
+
+  const handleConfirmar = async () => {
+    try {
+      await reservaService.crearReserva({
+        espacioId: espacio.id,
+        usuarioId: usuario.uid,
+        fecha,
+        hora,
+        monto: montoReserva,
+        detalles: {
+          duracion,
+          nombreEspacio: espacio.nombre,
+          imagenEspacio: espacio.imagenURL || ""
+        }
+      });
+
+      alert("Reserva guardada con éxito (simulación sin pago).");
+      navigate("/mis-reservas");
+    } catch (error) {
+      console.error("Error al guardar la reserva:", error);
+      alert("Ocurrió un error al guardar la reserva.");
+    }
   };
+
 
   return (
     <div className="conf-reserva-container">
@@ -60,3 +94,4 @@ const ConfirmarReserva = () => {
 };
 
 export default ConfirmarReserva;
+
