@@ -1,6 +1,5 @@
 import { db } from "../firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-// Si usas lógica de PayPal JS SDK, importa lo necesario aquí
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 class ReservaService {
   static instance = null;
@@ -12,31 +11,42 @@ class ReservaService {
     return ReservaService.instance;
   }
 
-  // Método para crear una reserva y gestionar el pago
   async crearReserva({ espacioId, usuarioId, fecha, hora, monto, detalles }) {
-    // 1. Guardar la reserva en Firestore (puedes agregar lógica de disponibilidad aquí)
-    const reservaRef = doc(db, "reservas", `${espacioId}_${fecha}_${hora}`);
+    const reservaId = `${espacioId}_${fecha}_${hora}`;
+    const reservaRef = doc(db, "reservas", reservaId);
+
     await setDoc(reservaRef, {
+      id: reservaId,
       espacioId,
       usuarioId,
       fecha,
       hora,
       monto,
-      detalles,
+      detalles: {
+        ...detalles,
+        imagenEspacio: detalles.imagenEspacio // asegúrate de que este valor esté pasando
+      },
       estado: "pendiente_pago",
       creadaEn: new Date()
     });
-    // 2. Aquí podrías iniciar el flujo de pago con PayPal (o devolver datos para el botón)
-    // 3. Cuando el pago sea exitoso, actualiza el estado de la reserva a "pagada"
   }
 
-  // Método para confirmar el pago
   async confirmarPago(reservaId, detallesPago) {
     const reservaRef = doc(db, "reservas", reservaId);
     await setDoc(reservaRef, { estado: "pagada", detallesPago }, { merge: true });
   }
 
-  // Otros métodos: cancelar, modificar, consultar reservas, etc.
+  async obtenerReservasPorUsuario(usuarioId) {
+    const reservasRef = collection(db, "reservas");
+    const q = query(reservasRef, where("usuarioId", "==", usuarioId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => doc.data());
+  }
+
+  async cancelarReserva(reservaId) {
+    const reservaRef = doc(db, "reservas", reservaId);
+    await setDoc(reservaRef, { estado: "cancelada" }, { merge: true });
+  }
 }
 
 export default ReservaService;
