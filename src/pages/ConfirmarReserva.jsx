@@ -2,43 +2,35 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaypalButton from "../components/PaypalButton/PaypalButton";
 import ReservaService from "../services/ReservaFacade";
-import "./ConfirmarReserva.css"; 
+import "./ConfirmarReserva.css";
 
 const reservaService = ReservaService.getInstance();
 
 const ConfirmarReserva = () => {
-  const location = useLocation();
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const { espacio, fecha, hora, duracion, usuario } = location.state || {};
+  const {
+    reservaId,
+    espacio,
+    fecha,
+    hora,
+    duracion,
+    usuario
+  } = state || {};
 
   if (!espacio || !fecha || !hora || !duracion) {
-    return <p className="conf-reserva-error">No hay datos de reserva. Por favor selecciona un espacio, fecha, hora y duración.</p>;
+    return <p className="conf-reserva-error">Faltan datos de reserva. Vuelve a Mis Reservas.</p>;
   }
 
   const montoReserva = espacio.precio
     ? parseFloat(String(espacio.precio).replace(/[^0-9.]/g, ""))
     : 15.0;
-  const reservaId = `${espacio.id}_${fecha}_${hora}`;
 
   const handlePagoExitoso = async (detalles) => {
-    await reservaService.crearReserva({
-      espacioId: espacio.id,
-      usuarioId: usuario.uid,
-      fecha,
-      hora,
-      monto: montoReserva,
-      detalles: {
-        duracion,
-        nombreEspacio: espacio.nombre,
-        imagenEspacio: espacio.imagenURL // o el nombre correcto del campo
-      }
-    });
-
-    await reservaService.confirmarPago(`${espacio.id}_${fecha}_${hora}`, detalles);
+    if (!reservaId) return;
+    await reservaService.confirmarPago(reservaId, detalles);
     navigate("/mis-reservas");
   };
-
-
 
   const handleConfirmar = async () => {
     try {
@@ -46,7 +38,8 @@ const ConfirmarReserva = () => {
         espacioId: espacio.id,
         usuarioId: usuario.uid,
         fecha,
-        hora,
+        horaInicio: hora,
+        horaFin: hora,
         monto: montoReserva,
         detalles: {
           duracion,
@@ -63,6 +56,12 @@ const ConfirmarReserva = () => {
     }
   };
 
+  const handlePagarManual = async () => {
+    if (!reservaId) return;
+    await reservaService.confirmarPago(reservaId, { metodo: "manual" });
+    alert("Reserva marcada como pagada.");
+    navigate("/mis-reservas");
+  };
 
   return (
     <div className="conf-reserva-container">
@@ -75,19 +74,26 @@ const ConfirmarReserva = () => {
           <p><strong>Duración:</strong> {duracion}</p>
           <p><strong>Monto a pagar:</strong> ${montoReserva}</p>
         </div>
-        <div className="conf-reserva-paypal">
-          <PaypalButton monto={montoReserva} onPagoExitoso={handlePagoExitoso} />
-        </div>
-        <button className="conf-reserva-btn" onClick={handleConfirmar}>
-          CONFIRMAR
-        </button>
-        <button
-          className="conf-reserva-btn-rojo"
-          style={{ marginTop: "0.7rem" }}
-          onClick={() => alert("Simulación de pago en efectivo o presencial.")}
-        >
-          PAGAR
-        </button>
+        {/* Si la reserva ya existe, mostrar pasarela de pago y botón PAGAR */}
+        {reservaId ? (
+          <>
+            <div className="conf-reserva-paypal">
+              <PaypalButton monto={montoReserva} onPagoExitoso={handlePagoExitoso} />
+            </div>
+            <button
+              className="conf-reserva-btn-rojo"
+              style={{ marginTop: "0.7rem" }}
+              onClick={handlePagarManual}
+            >
+              PAGAR
+            </button>
+          </>
+        ) : (
+          // Si es nueva, solo mostrar botón confirmar
+          <button className="conf-reserva-btn" onClick={handleConfirmar}>
+            CONFIRMAR
+          </button>
+        )}
       </div>
     </div>
   );
