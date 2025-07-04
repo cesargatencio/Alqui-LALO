@@ -68,5 +68,14 @@ export async function uploadEspacioImage(path, file) {
 }
 
 export function getEspacioImageUrl(path) {
-  return supabase.storage.from(BUCKET_ESPACIO).getPublicUrl(path).data.publicUrl;
+  const { data, error } = supabase
+    .storage
+    .from(BUCKET_ESPACIO)
+    .getPublicUrl(path);
+  if (error) {
+    console.error("Supabase getPublicUrl error for", path, error);
+    throw new Error(error.message || "Error desconocido al obtener publicUrl");
+  }
+  console.log("Supabase publicUrl for", path, "→", data.publicUrl);
+  return data.publicUrl;
 }

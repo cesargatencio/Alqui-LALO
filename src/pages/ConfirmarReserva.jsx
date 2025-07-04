@@ -38,8 +38,7 @@ const ConfirmarReserva = () => {
         espacioId: espacio.id,
         usuarioId: usuario.uid,
         fecha,
-        horaInicio: hora,
-        horaFin: hora,
+        hora,
         monto: montoReserva,
         detalles: {
           duracion,
@@ -74,7 +73,6 @@ const ConfirmarReserva = () => {
           <p><strong>Duración:</strong> {duracion}</p>
           <p><strong>Monto a pagar:</strong> ${montoReserva}</p>
         </div>
-        {/* Si la reserva ya existe, mostrar pasarela de pago y botón PAGAR */}
         {reservaId ? (
           <>
             <div className="conf-reserva-paypal">
@@ -89,7 +87,6 @@ const ConfirmarReserva = () => {
             </button>
           </>
         ) : (
-          // Si es nueva, solo mostrar botón confirmar
           <button className="conf-reserva-btn" onClick={handleConfirmar}>
             CONFIRMAR
           </button>
