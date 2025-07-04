@@ -1,4 +1,3 @@
-// src/pages/LandingPage.jsx
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +7,13 @@ import "slick-carousel/slick/slick-theme.css";
 import "./LandingPage.css";
 
 const LandingPage = () => {
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
-  const [duracion, setDuracion] = useState("");
-  const [capacidad, setCapacidad] = useState("");
+  const [formFiltros, setFormFiltros] = useState({
+    fecha: "",
+    capacidadMin: "",
+    capacidadMax: "",
+    precioMax: "",
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,13 +25,20 @@ const LandingPage = () => {
     }
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormFiltros((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleBuscar = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (fechaInicio) params.set("fechaInicio", fechaInicio);
-    if (fechaFin) params.set("fechaFin", fechaFin);
-    if (duracion) params.set("duracion", duracion);
-    if (capacidad) params.set("capacidad", capacidad);
+    if (formFiltros.fecha) params.set("fecha", formFiltros.fecha);
+    if (formFiltros.capacidadMin)
+      params.set("capacidadMin", formFiltros.capacidadMin);
+    if (formFiltros.capacidadMax)
+      params.set("capacidadMax", formFiltros.capacidadMax);
+    if (formFiltros.precioMax) params.set("precioMax", formFiltros.precioMax);
     navigate(`/catalogo?${params.toString()}`);
   };
 
@@ -75,70 +84,48 @@ const LandingPage = () => {
       <form className="search-bar" onSubmit={handleBuscar}>
         <div className="search-fields">
           <label>
-            Fecha inicio
+            Fecha de reserva
             <input
               type="date"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
-              required
+              name="fecha"
+              value={formFiltros.fecha}
+              onChange={handleChange}
             />
           </label>
           <label>
-            Fecha fin
+            Capacidad mínima
             <input
-              type="date"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-              required
+              type="number"
+              name="capacidadMin"
+              value={formFiltros.capacidadMin}
+              onChange={handleChange}
+              min="1"
+              placeholder="Ej. 10"
             />
           </label>
           <label>
-            Duración
-            <select
-              value={duracion}
-              onChange={(e) => setDuracion(e.target.value)}
-              required
-            >
-              <option disabled value="">
-                Duración
-              </option>
-              <option value="60">1 hora</option>
-              <option value="90">1.5 horas</option>
-              <option value="120">2 horas</option>
-              <option value="180">3 horas</option>
-              <option value="240">4 horas</option>
-              <option value="300">5 horas</option>
-              <option value="360">6 horas</option>
-              <option value="480">8 horas</option>
-              <option value="720">12 horas</option>
-              <option value="1440">1 día</option>
-              <option value="2880">2 días</option>
-              <option value="4320">3 días</option>
-              <option value="5760">4 días</option>
-              <option value="7200">5 días</option>
-              <option value="8640">6 días</option>
-              <option value="10080">7 días</option>
-            </select>
+            Capacidad máxima
+            <input
+              type="number"
+              name="capacidadMax"
+              value={formFiltros.capacidadMax}
+              onChange={handleChange}
+              min="1"
+              placeholder="Ej. 100"
+            />
           </label>
           <label>
-            Capacidad
-            <select
-              value={capacidad}
-              onChange={(e) => setCapacidad(e.target.value)}
-              required
-            >
-              <option disabled value="">
-                Capacidad
-              </option>
-              <option value="10-30">10 - 30</option>
-              <option value="31-50">31 - 50</option>
-              <option value="51-100">51 - 100</option>
-              <option value="101-200">101 - 200</option>
-              <option value="201-500">201 - 500</option>
-            </select>
+            Precio por hora (máx USD)
+            <input
+              type="number"
+              name="precioMax"
+              value={formFiltros.precioMax}
+              onChange={handleChange}
+              min="1"
+              placeholder="Ej. 18"
+            />
           </label>
         </div>
-
         <button className="cta-button" type="submit">
           Buscar
         </button>
