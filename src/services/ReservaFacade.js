@@ -24,7 +24,7 @@ class ReservaService {
       monto,
       detalles: {
         ...detalles,
-        imagenEspacio: detalles.imagenEspacio // asegúrate de que este valor esté pasando
+        imagenEspacio: detalles.imagenEspacio // ⚠️ NO CAMBIES EL NOMBRE
       },
       estado: "pendiente_pago",
       creadaEn: new Date()

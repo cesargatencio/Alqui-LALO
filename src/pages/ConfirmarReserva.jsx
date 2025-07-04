@@ -26,12 +26,6 @@ const ConfirmarReserva = () => {
     ? parseFloat(String(espacio.precio).replace(/[^0-9.]/g, ""))
     : 15.0;
 
-  const handlePagoExitoso = async (detalles) => {
-    if (!reservaId) return;
-    await reservaService.confirmarPago(reservaId, detalles);
-    navigate("/mis-reservas");
-  };
-
   const handleConfirmar = async () => {
     try {
       await reservaService.crearReserva({
@@ -43,16 +37,21 @@ const ConfirmarReserva = () => {
         detalles: {
           duracion,
           nombreEspacio: espacio.nombre,
-          imagenEspacio: espacio.imagenURL || ""
+          imagenEspacio: espacio.imagenURL // Usamos la URL recibida por state
         }
       });
-
       alert("Reserva guardada con éxito (simulación sin pago).");
       navigate("/mis-reservas");
     } catch (error) {
       console.error("Error al guardar la reserva:", error);
       alert("Ocurrió un error al guardar la reserva.");
     }
+  };
+
+  const handlePagoExitoso = async (detalles) => {
+    if (!reservaId) return;
+    await reservaService.confirmarPago(reservaId, detalles);
+    navigate("/mis-reservas");
   };
 
   const handlePagarManual = async () => {

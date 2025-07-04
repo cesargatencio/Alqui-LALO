@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReservaService from "../../services/ReservaFacade";
 import "./ReservaCard.css";
 
 const ReservaCard = ({ reserva }) => {
-  const [imageUrl, setImageUrl] = useState("/imagenes/espacio-default.jpg");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Opción B: usamos directamente la URL pública guardada en Firestore
-    const publicUrl = reserva.detalles.imagenEspacio;
-    setImageUrl(publicUrl || "/imagenes/espacio-default.jpg");
-  }, [reserva]);
 
   const handleCancelar = async () => {
     if (!window.confirm("¿Seguro quieres cancelar esta reserva?")) return;
@@ -30,7 +23,7 @@ const ReservaCard = ({ reserva }) => {
         espacio: {
           id: reserva.espacioId,
           nombre: reserva.detalles.nombreEspacio,
-          imagenURL: imageUrl,
+          imagenURL: reserva.detalles.imagenEspacio,
           precio: reserva.monto
         },
         fecha: reserva.fecha,
@@ -41,11 +34,14 @@ const ReservaCard = ({ reserva }) => {
     });
   };
 
+  // Usa directamente la URL pública guardada en Firestore
+  const imgSrc = reserva.detalles.imagenEspacio || "/imagenes/espacio-default.jpg";
+
   return (
     <div className="reserva-card">
       <img
         className="reserva-img"
-        src={imageUrl}
+        src={imgSrc}
         alt={reserva.detalles.nombreEspacio}
       />
       <div className="reserva-contenido">

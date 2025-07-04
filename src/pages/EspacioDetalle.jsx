@@ -362,6 +362,7 @@ const EspacioDetalle = () => {
                 id: espacio.id,
                 nombre: espacio.nombre,
                 precio: espacio.precio,
+                imagenURL: espacio.imagen // <- añade la URL pública aquí
               },
               fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
               hora: horaSeleccionada,
