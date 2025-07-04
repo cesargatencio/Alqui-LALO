@@ -1,50 +1,44 @@
 import { db } from "../firebase";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  orderBy,
-  getDocs
-} from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 const espaciosCol = collection(db, "espacios");
 
 /**
- * Busca espacios según filtros básicos (capacidad, tipo, ubicación)
- * @param {Object} filtros - { capacidad, tipo, ubicacion }
+ * Busca espacios según filtros básicos (capacidadMin, capacidadMax, precioMax)
+ * @param {Object} filtros - { capacidadMin, capacidadMax, precioMax }
  */
 export async function buscarEspacios(filtros = {}) {
-  // Si no hay filtros, trae todo sin ordenar
-  if (!filtros || Object.values(filtros).every(v => !v)) {
+  if (!filtros || Object.values(filtros).every((v) => !v)) {
     const snap = await getDocs(espaciosCol);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  let q = query(espaciosCol);
+  let q = espaciosCol;
+  const constraints = [];
+  if (filtros.capacidadMin) {
+    constraints.push(where("capacidad", ">=", Number(filtros.capacidadMin)));
+  }
+  if (filtros.capacidadMax) {
+    constraints.push(where("capacidad", "<=", Number(filtros.capacidadMax)));
+  }
+  if (filtros.precioMax) {
+    constraints.push(where("precio", "<=", Number(filtros.precioMax)));
+  }
 
-  if (filtros.capacidad) {
-    q = query(q, where("capacidad", ">=", Number(filtros.capacidad)));
+  if (constraints.length > 0) {
+    q = query(espaciosCol, ...constraints);
   }
-  if (filtros.tipo) {
-    q = query(q, where("tipo", "==", filtros.tipo));
-  }
-  if (filtros.ubicacion) {
-    q = query(q, where("ubicacion", "==", filtros.ubicacion));
-  }
-  // Ordena solo si el campo existe en todos los docs, si no, comenta esta línea:
-  // q = query(q, orderBy("precioHora", "asc"));
 
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 /**
- * Obtiene espacios disponibles en un rango de tiempo y según filtros
- * @param {Object} filtros - { desde, hasta, capacidad, tipo, ubicacion }
+ * Obtiene espacios disponibles en una fecha y según filtros
+ * @param {Object} filtros - { fecha, capacidadMin, capacidadMax, precioMax }
  */
 export async function espaciosDisponibles(filtros) {
-  const { desde, hasta, ...rest } = filtros;
+  const { fecha, ...rest } = filtros;
   const todos = await buscarEspacios(rest);
   const disponibles = [];
 
@@ -52,8 +46,7 @@ export async function espaciosDisponibles(filtros) {
     const reservasQ = query(
       collection(db, "reservas"),
       where("espacioId", "==", espacio.id),
-      where("desde", "<", filtros.hasta),
-      where("hasta", ">", filtros.desde)
+      where("fecha", "==", fecha)
     );
     const snap = await getDocs(reservasQ);
     if (snap.empty) {
@@ -66,10 +59,10 @@ export async function espaciosDisponibles(filtros) {
 
 /**
  * Agrega un nuevo espacio a la colección "espacios"
- * @param {Object} espacio - { nombre, descripcion, capacidad, precio, imagen, imagenPath }
+ * @param {Object} espacio
  */
 export async function addEspacio(espacio) {
-  const espaciosCol = collection(db, "espacios");
   const docRef = await addDoc(espaciosCol, espacio);
   return docRef.id;
 }
+
