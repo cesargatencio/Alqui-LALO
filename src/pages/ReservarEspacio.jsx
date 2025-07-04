@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { db } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+/**
+ * Formulario para reservar un espacio.
+ * Duración se pide aquí, no en la búsqueda.
+ */
 const ReservarEspacio = () => {
   const [form, setForm] = useState({
     nombre: "",
@@ -23,7 +27,10 @@ const ReservarEspacio = () => {
 
     // Validación simple
     if (!form.nombre || !form.espacio || !form.fecha || !form.hora) {
-      setEstado({ tipo: "error", mensaje: "Por favor, completa todos los campos obligatorios." });
+      setEstado({
+        tipo: "error",
+        mensaje: "Por favor, completa todos los campos obligatorios.",
+      });
       return;
     }
 
@@ -34,10 +41,20 @@ const ReservarEspacio = () => {
       });
 
       setEstado({ tipo: "exito", mensaje: "¡Reserva realizada con éxito!" });
-      setForm({ nombre: "", email: "", espacio: "", fecha: "", hora: "", duracion: "" });
+      setForm({
+        nombre: "",
+        email: "",
+        espacio: "",
+        fecha: "",
+        hora: "",
+        duracion: "",
+      });
     } catch (error) {
       console.error("Error al guardar reserva:", error);
-      setEstado({ tipo: "error", mensaje: "Ocurrió un error al guardar la reserva." });
+      setEstado({
+        tipo: "error",
+        mensaje: "Ocurrió un error al guardar la reserva.",
+      });
     }
   };
 
@@ -46,23 +63,69 @@ const ReservarEspacio = () => {
       <h2>Reservar un espacio</h2>
 
       <form onSubmit={handleSubmit}>
-        <input type="text" name="nombre" placeholder="Tu nombre" value={form.nombre} onChange={handleChange} required />
-        <input type="email" name="email" placeholder="Correo electrónico" value={form.email} onChange={handleChange} required />
-        <input type="text" name="espacio" placeholder="Nombre del espacio" value={form.espacio} onChange={handleChange} required />
-        <input type="date" name="fecha" value={form.fecha} onChange={handleChange} required />
-        <input type="time" name="hora" value={form.hora} onChange={handleChange} required />
-        <select name="duracion" value={form.duracion} onChange={handleChange}>
+        <input
+          type="text"
+          name="nombre"
+          placeholder="Tu nombre"
+          value={form.nombre}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="espacio"
+          placeholder="Nombre del espacio"
+          value={form.espacio}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="date"
+          name="fecha"
+          value={form.fecha}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="time"
+          name="hora"
+          value={form.hora}
+          onChange={handleChange}
+          required
+        />
+        <select
+          name="duracion"
+          value={form.duracion}
+          onChange={handleChange}
+          required
+        >
           <option value="">Duración</option>
-          <option value="45 minutos">45 minutos</option>
-          <option value="1 hora">1 hora</option>
+          <option value="1">1 hora</option>
           <option value="2 horas">2 horas</option>
+          <option value="3 horas">3 horas</option>
+          <option value="4 horas">4 horas</option>
+          <option value="5 horas">5 horas</option>
+          <option value="6 horas">6 horas</option>
         </select>
 
         <button type="submit">Confirmar Reserva</button>
       </form>
 
       {estado && (
-        <p style={{ color: estado.tipo === "exito" ? "green" : "red", marginTop: "10px" }}>
+        <p
+          style={{
+            color: estado.tipo === "exito" ? "green" : "red",
+            marginTop: "10px",
+          }}
+        >
           {estado.mensaje}
         </p>
       )}
