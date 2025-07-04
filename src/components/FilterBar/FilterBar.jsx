@@ -1,49 +1,65 @@
 import React from "react";
-import "./FilterBar.css";
 
-export default function FilterBar({ filtros, onChange }) {
+/**
+ * Barra de filtros reutilizable para el catálogo de espacios.
+ * Permite buscar solo al presionar el botón.
+ * Props:
+ *   - filtros: objeto con valores actuales de los filtros.
+ *   - onChange: función para actualizar los filtros.
+ *   - onSearch: función que realiza la búsqueda al submit.
+ */
+const FilterBar = ({ filtros = {}, onChange, onSearch }) => {
   return (
-    <div className="filter-bar">
-      <label>
-        Fecha:
-        <input
-          type="date"
-          name="fecha"
-          value={filtros.fecha}
-          onChange={onChange}
-        />
-      </label>
-
-      <label>
-        Hora inicio:
-        <input
-          type="time"
-          name="desde"
-          value={filtros.desde}
-          onChange={onChange}
-        />
-      </label>
-
-      <label>
-        Hora fin:
-        <input
-          type="time"
-          name="hasta"
-          value={filtros.hasta}
-          onChange={onChange}
-        />
-      </label>
-
-      <label>
-        Capacidad máxima:
-        <input
-          type="number"
-          name="capacidad"
-          value={filtros.capacidad}
-          onChange={onChange}
-          placeholder="Ej. 50"
-        />
-      </label>
-    </div>
+    <form className="search-bar" onSubmit={onSearch}>
+      <div className="search-fields">
+        <label>
+          Fecha de reserva
+          <input
+            type="date"
+            name="fecha"
+            value={filtros.fecha || ""}
+            onChange={onChange}
+          />
+        </label>
+        <label>
+          Capacidad mínima
+          <input
+            type="number"
+            name="capacidadMin"
+            value={filtros.capacidadMin || ""}
+            min="1"
+            onChange={onChange}
+            placeholder="Ej. 10"
+          />
+        </label>
+        <label>
+          Capacidad máxima
+          <input
+            type="number"
+            name="capacidadMax"
+            value={filtros.capacidadMax || ""}
+            min="1"
+            onChange={onChange}
+            placeholder="Ej. 100"
+          />
+        </label>
+        <label>
+          Precio por hora (máx USD)
+          <input
+            type="number"
+            name="precioMax"
+            value={filtros.precioMax || ""}
+            min="1"
+            onChange={onChange}
+            placeholder="Ej. 18"
+          />
+        </label>
+      </div>
+      <button className="cta-button" type="submit">
+        Buscar
+      </button>
+    </form>
   );
-}
+};
+
+export default FilterBar;
