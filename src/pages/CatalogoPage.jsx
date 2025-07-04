@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-
 import AuthService from "../services/AuthSingleton";
 import FilterBar from "../components/FilterBar/FilterBar";
 import EspacioCard from "../components/EspacioCard/EspacioCard";
@@ -8,38 +7,44 @@ import {
   buscarEspacios,
   espaciosDisponibles,
 } from "../services/EspacioService";
-
 import "./CatalogoPage.css";
 
 export default function CatalogoPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Leer filtros de la URL
-  const fechaInicio = searchParams.get("fechaInicio") || "";
-  const fechaFin = searchParams.get("fechaFin") || "";
-  const duracion = searchParams.get("duracion") || "";
-  const capacidad = searchParams.get("capacidad") || "";
+  // Estado de los inputs
+  const [formFiltros, setFormFiltros] = useState({
+    fecha: searchParams.get("fecha") || "",
+    capacidadMin: searchParams.get("capacidadMin") || "",
+    capacidadMax: searchParams.get("capacidadMax") || "",
+    precioMax: searchParams.get("precioMax") || "",
+  });
 
-  // Construir estado de filtros
-  const initialFiltros = { fechaInicio, fechaFin, duracion, capacidad };
-  const [filtros, setFiltros] = useState(initialFiltros);
+  // Mantén sincronizados los inputs con la URL al navegar o llegar desde landing
+  useEffect(() => {
+    setFormFiltros({
+      fecha: searchParams.get("fecha") || "",
+      capacidadMin: searchParams.get("capacidadMin") || "",
+      capacidadMax: searchParams.get("capacidadMax") || "",
+      precioMax: searchParams.get("precioMax") || "",
+    });
+  }, [searchParams]);
+
+  // Estado de los filtros aplicados (solo cambia al hacer submit)
+  const [filtros, setFiltros] = useState({
+    fecha: searchParams.get("fecha") || "",
+    capacidadMin: searchParams.get("capacidadMin") || "",
+    capacidadMax: searchParams.get("capacidadMax") || "",
+    precioMax: searchParams.get("precioMax") || "",
+  });
 
   const [espacios, setEspacios] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Actualiza filtros si cambian los params
-  useEffect(() => {
-    setFiltros({ fechaInicio, fechaFin, duracion, capacidad });
-  }, [fechaInicio, fechaFin, duracion, capacidad]);
-
-  // Dispara la consulta en Firestore cuando filtros cambian
+  // Consulta los espacios cuando los filtros aplicados cambian
   useEffect(() => {
     setLoading(true);
-    const fn =
-      filtros.fechaInicio && filtros.fechaFin
-        ? espaciosDisponibles
-        : buscarEspacios;
-
+    const fn = filtros.fecha ? espaciosDisponibles : buscarEspacios;
     fn(filtros)
       .then((data) => setEspacios(data))
       .catch((err) => {
@@ -49,9 +54,26 @@ export default function CatalogoPage() {
       .finally(() => setLoading(false));
   }, [filtros]);
 
+  // Maneja cambios en los inputs del filtro
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFiltros((prev) => ({ ...prev, [name]: value }));
+    setFormFiltros((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Aplica el filtro solo al hacer submit (botón Buscar)
+  const handleBuscar = (e) => {
+    e.preventDefault();
+    setFiltros(formFiltros);
+
+    // Actualiza la URL
+    const params = new URLSearchParams();
+    if (formFiltros.fecha) params.set("fecha", formFiltros.fecha);
+    if (formFiltros.capacidadMin)
+      params.set("capacidadMin", formFiltros.capacidadMin);
+    if (formFiltros.capacidadMax)
+      params.set("capacidadMax", formFiltros.capacidadMax);
+    if (formFiltros.precioMax) params.set("precioMax", formFiltros.precioMax);
+    setSearchParams(params);
   };
 
   const user = AuthService.getInstance().getCurrentUser();
@@ -60,16 +82,11 @@ export default function CatalogoPage() {
   return (
     <div className="catalogo-container">
       <h1>Catálogo de Espacios</h1>
-
-      {/* Filtros dinámicos */}
       <FilterBar
-        filtros={filtros}
+        filtros={formFiltros}
         onChange={handleChange}
-        onSearch={() => {
-          /* opcional: navegar con nuevos filtros */
-        }}
+        onSearch={handleBuscar}
       />
-
       {loading ? (
         <p className="loading">Cargando espacios…</p>
       ) : (
@@ -85,10 +102,14 @@ export default function CatalogoPage() {
           )}
         </>
       )}
-
-      {/* Botón para agregar espacio, solo visible para admin y centrado abajo */}
       {isAdmin && (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "2rem",
+          }}
+        >
           <Link to="/agregar-espacio" className="btn-agregar-espacio">
             Agregar Espacio
           </Link>
@@ -97,3 +118,4 @@ export default function CatalogoPage() {
     </div>
   );
 }
+
