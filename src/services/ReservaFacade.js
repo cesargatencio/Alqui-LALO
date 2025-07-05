@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { doc, setDoc, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
 
 class ReservaService {
   static instance = null;
@@ -24,16 +24,21 @@ class ReservaService {
       monto,
       detalles: {
         ...detalles,
-        imagenEspacio: detalles.imagenEspacio // ⚠️ NO CAMBIES EL NOMBRE
+        imagenEspacio: detalles.imagenEspacio 
       },
       estado: "pendiente_pago",
-      creadaEn: new Date()
+      creadaEn: new Date(),
+      fechaReserva: new Date() // Para reportes
     });
   }
 
   async confirmarPago(reservaId, detallesPago) {
     const reservaRef = doc(db, "reservas", reservaId);
-    await setDoc(reservaRef, { estado: "pagada", detallesPago }, { merge: true });
+    await updateDoc(reservaRef, { 
+      estado: "pagada", 
+      detallesPago,
+      fechaPago: new Date()
+    });
   }
 
   async obtenerReservasPorUsuario(usuarioId) {
@@ -43,26 +48,84 @@ class ReservaService {
     return querySnapshot.docs.map((doc) => doc.data());
   }
 
-  async cancelarReserva(reservaId) {
+  async cancelarReserva(reservaId, motivoCancelacion = "No especificado") {
     const reservaRef = doc(db, "reservas", reservaId);
-    await deleteDoc(reservaRef);
+    await updateDoc(reservaRef, { 
+      estado: "cancelada",
+      motivoCancelacion,
+      fechaCancelacion: new Date()
+    });
   }
 
-  /**
-   * Retorna todas las reservas (pendiente_pago o pagada)
-   * para un espacio dado.
-   */
-  async obtenerReservasPorEspacio(espacioId) {
-    const reservasRef = collection(db, "reservas");
-    // Solo pendientes o ya pagadas
-    const q = query(
-      reservasRef,
-      where("espacioId", "==", espacioId),
-      where("estado", "in", ["pendiente_pago", "pagada"])
-    );
-    const snap = await getDocs(q);
-    // Devuelve array de datos
-    return snap.docs.map((d) => d.data());
+  // Método para obtener todas las reservas (para reportes)
+  async obtenerTodasLasReservas() {
+    try {
+      const reservasRef = collection(db, "reservas");
+      const querySnapshot = await getDocs(reservasRef);
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      console.error("Error al obtener todas las reservas:", error);
+      return [];
+    }
+  }
+
+  // Método para obtener reservas filtradas por estado
+  async obtenerReservasPorEstado(estado) {
+    try {
+      const reservasRef = collection(db, "reservas");
+      const q = query(reservasRef, where("estado", "==", estado));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      console.error(`Error al obtener reservas con estado ${estado}:`, error);
+      return [];
+    }
+  }
+
+  // Método para obtener reservas en un rango de fechas
+  async obtenerReservasEnRango(fechaInicio, fechaFin) {
+    try {
+      const reservasRef = collection(db, "reservas");
+      const querySnapshot = await getDocs(reservasRef);
+      
+      return querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter((reserva) => {
+          let fechaReserva = null;
+          
+          if (reserva.fechaReserva) {
+            if (reserva.fechaReserva.toDate) {
+              fechaReserva = reserva.fechaReserva.toDate();
+            } else if (reserva.fechaReserva instanceof Date) {
+              fechaReserva = reserva.fechaReserva;
+            } else {
+              fechaReserva = new Date(reserva.fechaReserva);
+            }
+          } else if (reserva.creadaEn) {
+            if (reserva.creadaEn.toDate) {
+              fechaReserva = reserva.creadaEn.toDate();
+            } else {
+              fechaReserva = new Date(reserva.creadaEn);
+            }
+          }
+
+          if (!fechaReserva || isNaN(fechaReserva.getTime())) return false;
+          
+          return fechaReserva >= fechaInicio && fechaReserva <= fechaFin;
+        });
+    } catch (error) {
+      console.error("Error al obtener reservas en rango:", error);
+      return [];
+    }
   }
 }
 
