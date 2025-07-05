@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Calendar from "react-calendar";
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AuthService from "../services/AuthSingleton";
 import ReservaService from "../services/ReservaFacade";
@@ -66,7 +66,7 @@ function ImagenEspacio({ src, alt }) {
     />
   );
 }
-function EditarEspacio({ espacio, onSave, onCancel }) {
+function EditarEspacio({ espacio, onSave, onCancel, mensajeExito }) {
   const [data, setData] = useState({
     nombre: espacio.nombre || "",
     descripcion: espacio.descripcion || "",
@@ -76,33 +76,53 @@ function EditarEspacio({ espacio, onSave, onCancel }) {
     id: espacio.id,
   });
   return (
-    <form onSubmit={e => { e.preventDefault(); onSave(data); }} style={{ display: "flex", gap: "1rem" }}>
-      <input
-        type="text"
-        value={data.nombre}
-        onChange={e => setData({ ...data, nombre: e.target.value })}
-        placeholder="Nombre"
-      />
-      <input
-        type="text"
-        value={data.descripcion}
-        onChange={e => setData({ ...data, descripcion: e.target.value })}
-        placeholder="Descripción"
-      />
-      <input
-        type="number"
-        value={data.capacidad}
-        onChange={e => setData({ ...data, capacidad: e.target.value })}
-        placeholder="Capacidad"
-      />
-      <input
-        type="number"
-        value={data.precio}
-        onChange={e => setData({ ...data, precio: e.target.value })}
-        placeholder="Precio"
-      />
-      <button type="submit">Guardar Cambios</button>
-      <button type="button" onClick={onCancel}>Cancelar</button>
+    <form
+      className="editar-espacio-form"
+      onSubmit={e => { e.preventDefault(); onSave(data); }}
+    >
+      <label>
+        Nombre
+        <input
+          type="text"
+          value={data.nombre}
+          onChange={e => setData({ ...data, nombre: e.target.value })}
+          placeholder="Nombre"
+        />
+      </label>
+      <label>
+        Descripción
+        <input
+          type="text"
+          value={data.descripcion}
+          onChange={e => setData({ ...data, descripcion: e.target.value })}
+          placeholder="Descripción"
+        />
+      </label>
+      <label>
+        Capacidad
+        <input
+          type="number"
+          value={data.capacidad}
+          onChange={e => setData({ ...data, capacidad: e.target.value })}
+          placeholder="Capacidad"
+        />
+      </label>
+      <label>
+        Precio
+        <input
+          type="number"
+          value={data.precio}
+          onChange={e => setData({ ...data, precio: e.target.value })}
+          placeholder="Precio"
+        />
+      </label>
+      <div className="editar-espacio-botones">
+        <button type="submit" className="btn-guardar">Guardar Cambios</button>
+        <button type="button" className="btn-cancelar" onClick={onCancel}>Cancelar</button>
+      </div>
+      {mensajeExito && (
+        <div className="mensaje-exito">{mensajeExito}</div>
+      )}
     </form>
   );
 }
@@ -117,6 +137,7 @@ const EspacioDetalle = () => {
   const [espacio, setEspacio] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [editando, setEditando] = useState(false);
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
 
   // Reseñas
   const [cargandoReseñas, setCargandoReseñas] = useState(true);
@@ -132,6 +153,8 @@ const EspacioDetalle = () => {
   const [comentario, setComentario] = useState("");
 
   const [fechasReservadas, setFechasReservadas] = useState([]);
+  const [mensajeExito, setMensajeExito] = useState(""); // Nuevo estado para el mensaje
+  const [errorReserva, setErrorReserva] = useState(""); // Estado para errores de reserva
 
   const usuario = AuthService.getInstance().getCurrentUser();
   const isAdmin = AuthService.isAdmin(usuario);
@@ -240,11 +263,24 @@ const EspacioDetalle = () => {
     try {
       const ref = doc(db, "espacios", id);
       await updateDoc(ref, data);
-      alert("Espacio actualizado correctamente");
-      setEditando(false);
       setEspacio({ ...espacio, ...data });
+      setMensajeExito("Espacio actualizado correctamente");
+      setTimeout(() => setMensajeExito(""),2000 ); // Opcional: oculta después de 3s
+      setTimeout(() => setEditando(false), 2000); // Si quieres que el formulario se cierre, deja esto
+      // Si quieres que el mensaje se vea sin cerrar el formulario, comenta la línea de arriba
     } catch (error) {
       alert("Error al actualizar el espacio: " + error.message);
+    }
+  };
+
+  // Eliminar espacio
+  const handleEliminarEspacio = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este espacio? Esta acción no se puede deshacer.")) return;
+    try {
+      await deleteDoc(doc(db, "espacios", id));
+      navigate("/catalogo");
+    } catch (error) {
+      alert("Error al eliminar el espacio: " + error.message);
     }
   };
 
@@ -355,24 +391,22 @@ const EspacioDetalle = () => {
         </div>
       </div>
 
-     
-
       <div className="reserva-seccion">
         <h3>Realiza tu reserva</h3>
         <div className="reserva-form">
           <select
-  value={horaSeleccionada}
-  onChange={e => setHoraSeleccionada(e.target.value)}
->
-  <option value="">Selecciona hora</option>
-  <option value="07:00">07:00</option>
-  <option value="08:45">08:45</option>
-  <option value="10:30">10:30</option>
-  <option value="12:15">12:15</option>
-  <option value="2:00">2:00</option>
-  <option value="3:45">3:45</option>
-  <option value="5:30">5:30</option>
-</select>
+            value={horaSeleccionada}
+            onChange={e => setHoraSeleccionada(e.target.value)}
+          >
+            <option value="">Selecciona hora</option>
+            <option value="07:00">07:00</option>
+            <option value="08:45">08:45</option>
+            <option value="10:30">10:30</option>
+            <option value="12:15">12:15</option>
+            <option value="2:00">2:00</option>
+            <option value="3:45">3:45</option>
+            <option value="5:30">5:30</option>
+          </select>
 
           <select
             value={duracionSeleccionada}
@@ -385,30 +419,58 @@ const EspacioDetalle = () => {
             <option value="3 horas">3 horas</option>
             <option value="6 horas">6 horas</option>
           </select>
-          <Link
-            to="/confirmar-reserva"
-            state={{
-              espacio: {
-                id: espacio.id,
-                nombre: espacio.nombre,
-                precio: espacio.precio,
-                imagenURL: espacio.imagen // <- añade la URL pública aquí
-              },
-              fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
-              hora: horaSeleccionada,
-              duracion: duracionSeleccionada,
-              usuario: usuario ? { email: usuario.email, uid: usuario.uid } : null,
-            }}
+          <button
             className="btn-alquilar"
+            onClick={e => {
+              e.preventDefault();
+              if (!horaSeleccionada || !duracionSeleccionada) {
+                setErrorReserva("Por favor, selecciona la hora y la duración.");
+                return;
+              }
+              // Si todo está bien, navega:
+              navigate("/confirmar-reserva", {
+                state: {
+                  espacio: {
+                    id: espacio.id,
+                    nombre: espacio.nombre,
+                    precio: espacio.precio,
+                    imagenURL: espacio.imagen
+                  },
+                  fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
+                  hora: horaSeleccionada,
+                  duracion: duracionSeleccionada,
+                  usuario: usuario ? { email: usuario.email, uid: usuario.uid } : null,
+                }
+              });
+            }}
+            type="button"
           >
             ALQUILAR
-          </Link>
+          </button>
+          {errorReserva && (
+            <div style={{
+              color: "red",
+              marginTop: "12px",
+              fontWeight: "bold",
+              textAlign: "center"
+            }}>
+              {errorReserva}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Edición admin */}
       {isAdmin && !editando && (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "2rem" }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "1rem",
+          marginTop: "2rem"
+        }}>
+          <button className="btn-eliminar-espacio" onClick={() => setMostrarModalEliminar(true)}>
+            Eliminar Espacio
+          </button>
           <button className="btn-editar-espacio" onClick={() => setEditando(true)}>
             Editar Espacio
           </button>
@@ -419,7 +481,34 @@ const EspacioDetalle = () => {
           espacio={espacio}
           onSave={handleGuardarCambios}
           onCancel={() => setEditando(false)}
+          mensajeExito={mensajeExito}
         />
+      )}
+
+      {mostrarModalEliminar && (
+        <div className="modal-eliminar-overlay">
+          <div className="modal-eliminar">
+            <h3>¿Eliminar este espacio?</h3>
+            <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este espacio?</p>
+            <div className="modal-eliminar-botones">
+              <button
+                className="btn-cancelar"
+                onClick={() => setMostrarModalEliminar(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn-eliminar-espacio"
+                onClick={async () => {
+                  await handleEliminarEspacio();
+                  setMostrarModalEliminar(false);
+                }}
+              >
+                Sí, eliminar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

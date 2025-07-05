@@ -117,18 +117,19 @@ const ReservarEspacio = () => {
         </select>
 
         <button type="submit">Confirmar Reserva</button>
+        {estado && (
+          <div
+            style={{
+              color: estado.tipo === "exito" ? "green" : "red",
+              marginTop: "12px",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            {estado.mensaje}
+          </div>
+        )}
       </form>
-
-      {estado && (
-        <p
-          style={{
-            color: estado.tipo === "exito" ? "green" : "red",
-            marginTop: "10px",
-          }}
-        >
-          {estado.mensaje}
-        </p>
-      )}
     </div>
   );
 };
