@@ -3,14 +3,19 @@ import { useNavigate } from "react-router-dom";
 import ReservaService from "../../services/ReservaFacade";
 import "./ReservaCard.css";
 
-const ReservaCard = ({ reserva }) => {
+const ReservaCard = ({ reserva, onEliminar }) => {
   const navigate = useNavigate();
+  const reservaService = ReservaService.getInstance();
 
   const handleCancelar = async () => {
-    if (!window.confirm("¿Seguro quieres cancelar esta reserva?")) return;
+    const confirmar = window.confirm(`¿Estás seguro de que deseas cancelar esta reserva?\n\nEspacio: ${reserva.detalles.nombreEspacio}\nFecha: ${new Date(reserva.fecha).toLocaleDateString()} a las ${reserva.hora}`);
+    
+    if (!confirmar) return; // ⚠️ Si cancela, no hacer nada
+
     try {
-      await ReservaService.cancelarReserva(reserva.id);
+      await reservaService.cancelarReserva(reserva.id);
       alert("Reserva cancelada correctamente");
+      if (onEliminar) onEliminar(reserva.id);
     } catch (e) {
       alert("No se pudo cancelar la reserva: " + e.message);
     }
@@ -34,7 +39,6 @@ const ReservaCard = ({ reserva }) => {
     });
   };
 
-  // Usa directamente la URL pública guardada en Firestore
   const imgSrc = reserva.detalles.imagenEspacio || "/imagenes/espacio-default.jpg";
 
   return (
@@ -52,11 +56,13 @@ const ReservaCard = ({ reserva }) => {
           <strong>Estado:</strong>
           <span className={`estado ${reserva.estado}`}>{reserva.estado}</span>
         </p>
+
         {reserva.estado !== "cancelada" && (
           <>
             <button className="cancelar-btn" onClick={handleCancelar}>
               Cancelar Reserva
             </button>
+
             {reserva.estado === "pendiente_pago" && (
               <button className="pagar-btn" onClick={handlePagar}>
                 Pagar Reserva
