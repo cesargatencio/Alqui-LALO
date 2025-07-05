@@ -47,6 +47,23 @@ class ReservaService {
     const reservaRef = doc(db, "reservas", reservaId);
     await setDoc(reservaRef, { estado: "cancelada" }, { merge: true });
   }
+
+  /**
+   * Retorna todas las reservas (pendiente_pago o pagada)
+   * para un espacio dado.
+   */
+  async obtenerReservasPorEspacio(espacioId) {
+    const reservasRef = collection(db, "reservas");
+    // Solo pendientes o ya pagadas
+    const q = query(
+      reservasRef,
+      where("espacioId", "==", espacioId),
+      where("estado", "in", ["pendiente_pago", "pagada"])
+    );
+    const snap = await getDocs(q);
+    // Devuelve array de datos
+    return snap.docs.map((d) => d.data());
+  }
 }
 
 export default ReservaService;

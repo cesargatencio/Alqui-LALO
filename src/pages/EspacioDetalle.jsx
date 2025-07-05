@@ -4,6 +4,7 @@ import Calendar from "react-calendar";
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AuthService from "../services/AuthSingleton";
+import ReservaService from "../services/ReservaFacade";
 import "./EspacioDetalle.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
@@ -106,6 +107,8 @@ function EditarEspacio({ espacio, onSave, onCancel }) {
   );
 }
 
+const ReservaServiceInst = ReservaService.getInstance();
+
 const EspacioDetalle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -127,6 +130,8 @@ const EspacioDetalle = () => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comentario, setComentario] = useState("");
+
+  const [fechasReservadas, setFechasReservadas] = useState([]);
 
   const usuario = AuthService.getInstance().getCurrentUser();
   const isAdmin = AuthService.isAdmin(usuario);
@@ -150,6 +155,28 @@ const EspacioDetalle = () => {
       }
     })();
   }, [id]);
+
+  // Carga fechas reservadas usando el service
+  useEffect(() => {
+    if (!espacio) return;
+    (async () => {
+      try {
+        const reservas = await ReservaServiceInst.obtenerReservasPorEspacio(espacio.id);
+        const lista = reservas.map(r => {
+          const d = new Date(r.fecha);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        });
+        setFechasReservadas(lista);
+      } catch (e) {
+        console.error("Error cargando reservas:", e);
+        setFechasReservadas([]);
+      }
+    })();
+  }, [espacio]);
+
+  // Memoiza el set de fechas reservadas
+  const reservadoSet = useMemo(() => new Set(fechasReservadas), [fechasReservadas]);
 
   // Carga reseñas desde Firestore
   const storageKey = useMemo(() => `reseñas_espacio_${espacio?.id}`, [espacio?.id]);
@@ -243,8 +270,15 @@ const EspacioDetalle = () => {
         <div className="extra-box">
           <h3>Calendario de disponibilidad</h3>
           <Calendar
-            tileDisabled={({ date, view }) => view === "month" && isFechaOcupada(date)}
-            tileClassName={({ date }) => isFechaOcupada(date) ? "fecha-ocupada" : null}
+            tileDisabled={({ date, view }) =>
+              view === "month" &&
+              reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
+            }
+            tileClassName={({ date }) =>
+              reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
+                ? "fecha-ocupada"
+                : null
+            }
             minDate={new Date()}
             className="calendario-reserva"
             onClickDay={setFechaSeleccionada}
@@ -321,12 +355,7 @@ const EspacioDetalle = () => {
         </div>
       </div>
 
-      <div className="espacio-eventos">
-        <h3>Eventos:</h3>
-        <ul>
-          <li>No hay eventos programados aún.</li>
-        </ul>
-      </div>
+     
 
       <div className="reserva-seccion">
         <h3>Realiza tu reserva</h3>
@@ -352,8 +381,6 @@ const EspacioDetalle = () => {
             <option value="2 horas">2 horas</option>
             <option value="3 horas">3 horas</option>
             <option value="6 horas">6 horas</option>
-            <option value="12 horas">12 horas</option>
-            <option value="24 horas">24 horas</option>
           </select>
           <Link
             to="/confirmar-reserva"
