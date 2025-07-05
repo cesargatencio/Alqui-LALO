@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
 
 class ReservaService {
   static instance = null;
@@ -45,7 +45,7 @@ class ReservaService {
 
   async cancelarReserva(reservaId) {
     const reservaRef = doc(db, "reservas", reservaId);
-    await setDoc(reservaRef, { estado: "cancelada" }, { merge: true });
+    await deleteDoc(reservaRef);
   }
 
   /**
