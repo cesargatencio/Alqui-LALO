@@ -52,7 +52,7 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="logo">AlquiLALO</div>
+      <div className="logo" style={{cursor: "pointer"}} onClick={() => navigate("/")}>AlquiLALO</div>
       <nav className="nav">
         <Link to="/">Inicio</Link>
         <Link to="/catalogo">Catálogo</Link>
