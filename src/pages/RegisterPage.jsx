@@ -57,6 +57,20 @@ const RegisterPage = () => {
       return;
     }
 
+    // 1.1 Validar longitud mínima de la contraseña
+    if (formData.password.length < 6) {
+      setEmailError("La contraseña debe tener al menos 6 caracteres.");
+      if (formRef.current) {
+        const passInput = Array.from(formRef.current.elements).find(el => el.name === "password");
+        if (passInput) {
+          passInput.classList.add("input-error");
+          passInput.setCustomValidity("La contraseña debe tener al menos 6 caracteres.");
+          passInput.reportValidity();
+        }
+      }
+      return;
+    }
+
     // 2. Validar dominio de correo solo si hay texto
     if (
       formData.correo &&
