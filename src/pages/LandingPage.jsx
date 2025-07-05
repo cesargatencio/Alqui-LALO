@@ -75,7 +75,7 @@ const LandingPage = () => {
 
       {/* Encabezado */}
       <h1>Organiza. Selecciona. Alquilalo.</h1>
-      <p className="bold-text">
+      <p>
         Gestiona espacios para eventos, clases o reuniones desde cualquier
         dispositivo con AlquiLALO.
       </p>
