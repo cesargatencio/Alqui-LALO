@@ -1,0 +1,15 @@
+.pagar-btn {
+  background-color: #25ac03;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem; 
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagar-btn:hover {
+  background-color: #2e7d32;
+}
