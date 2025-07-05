@@ -9,6 +9,7 @@ const reservaService = ReservaService.getInstance();
 const ConfirmarReserva = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+
   const {
     reservaId,
     espacio,
@@ -26,6 +27,30 @@ const ConfirmarReserva = () => {
     ? parseFloat(String(espacio.precio).replace(/[^0-9.]/g, ""))
     : 15.0;
 
+  // 👉 Para reservas ya creadas (desde MisReservas)
+  const handlePagoExitoso = async (detalles) => {
+    try {
+      if (!reservaId) throw new Error("No se encontró el ID de la reserva");
+      await reservaService.confirmarPago(reservaId, detalles);
+      alert("Reserva pagada con éxito");
+      navigate("/mis-reservas");
+    } catch (error) {
+      alert("Error al confirmar el pago: " + error.message);
+    }
+  };
+
+  const handlePagarManual = async () => {
+    try {
+      if (!reservaId) throw new Error("No se encontró el ID de la reserva");
+      await reservaService.confirmarPago(reservaId, { metodo: "manual" });
+      alert("Reserva marcada como pagada manualmente.");
+      navigate("/mis-reservas");
+    } catch (error) {
+      alert("Error al pagar manualmente: " + error.message);
+    }
+  };
+
+  // 👉 Para crear una nueva reserva (cuando no hay reservaId)
   const handleConfirmar = async () => {
     try {
       await reservaService.crearReserva({
@@ -37,28 +62,14 @@ const ConfirmarReserva = () => {
         detalles: {
           duracion,
           nombreEspacio: espacio.nombre,
-          imagenEspacio: espacio.imagenURL // Usamos la URL recibida por state
+          imagenEspacio: espacio.imagenURL
         }
       });
-      alert("Reserva guardada con éxito (simulación sin pago).");
+      alert("Reserva creada correctamente.");
       navigate("/mis-reservas");
     } catch (error) {
-      console.error("Error al guardar la reserva:", error);
-      alert("Ocurrió un error al guardar la reserva.");
+      alert("Error al crear la reserva: " + error.message);
     }
-  };
-
-  const handlePagoExitoso = async (detalles) => {
-    if (!reservaId) return;
-    await reservaService.confirmarPago(reservaId, detalles);
-    navigate("/mis-reservas");
-  };
-
-  const handlePagarManual = async () => {
-    if (!reservaId) return;
-    await reservaService.confirmarPago(reservaId, { metodo: "manual" });
-    alert("Reserva marcada como pagada.");
-    navigate("/mis-reservas");
   };
 
   return (
@@ -67,11 +78,12 @@ const ConfirmarReserva = () => {
         <h2>Confirmar Reserva</h2>
         <div className="conf-reserva-info">
           <p><strong>Espacio:</strong> {espacio.nombre}</p>
-          <p><strong>Fecha:</strong> {fecha ? new Date(fecha).toLocaleDateString() : ""}</p>
+          <p><strong>Fecha:</strong> {new Date(fecha).toLocaleDateString()}</p>
           <p><strong>Hora:</strong> {hora}</p>
           <p><strong>Duración:</strong> {duracion}</p>
           <p><strong>Monto a pagar:</strong> ${montoReserva}</p>
         </div>
+
         {reservaId ? (
           <>
             <div className="conf-reserva-paypal">
@@ -82,12 +94,12 @@ const ConfirmarReserva = () => {
               style={{ marginTop: "0.7rem" }}
               onClick={handlePagarManual}
             >
-              PAGAR
+              Pagar
             </button>
           </>
         ) : (
           <button className="conf-reserva-btn" onClick={handleConfirmar}>
-            CONFIRMAR
+            Confirmar Reserva
           </button>
         )}
       </div>
@@ -96,4 +108,5 @@ const ConfirmarReserva = () => {
 };
 
 export default ConfirmarReserva;
+
 
