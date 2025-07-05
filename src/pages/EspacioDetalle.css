@@ -339,3 +339,22 @@ textarea {
     flex-direction: column;
   }
 }
+/* 1) Quitar la línea roja y la cruz que React-Calendar añade a los tiles disabled */
+.react-calendar__tile--disabled {
+  text-decoration: none !important;    /* quita la línea */
+  color: #d00 !important;              /* si quieres mantenerlas rojas */
+}
+.react-calendar__tile--disabled::before {
+  content: none !important;            /* quita la cruz (✕) */
+}
+
+/* 2) Cambiar el color de hover de azul a verde clarito */
+.react-calendar__tile:hover {
+  background: #b2fab4 !important;      /* verde clarito */
+}
+
+/* (Opcional) si quieres también un color distinto para los días seleccionados */
+.react-calendar__tile--active {
+  background: #8ae68a !important;
+  color: #fff;
+}

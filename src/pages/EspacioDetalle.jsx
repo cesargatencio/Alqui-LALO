@@ -361,16 +361,19 @@ const EspacioDetalle = () => {
         <h3>Realiza tu reserva</h3>
         <div className="reserva-form">
           <select
-            value={horaSeleccionada}
-            onChange={e => setHoraSeleccionada(e.target.value)}
-          >
-            <option value="">Selecciona hora</option>
-            <option value="08:00">08:00</option>
-            <option value="10:00">10:00</option>
-            <option value="12:00">12:00</option>
-            <option value="14:00">14:00</option>
-            <option value="16:00">16:00</option>
-          </select>
+  value={horaSeleccionada}
+  onChange={e => setHoraSeleccionada(e.target.value)}
+>
+  <option value="">Selecciona hora</option>
+  <option value="07:00">07:00</option>
+  <option value="08:45">08:45</option>
+  <option value="10:30">10:30</option>
+  <option value="12:15">12:15</option>
+  <option value="2:00">2:00</option>
+  <option value="3:45">3:45</option>
+  <option value="5:30">5:30</option>
+</select>
+
           <select
             value={duracionSeleccionada}
             onChange={e => setDuracionSeleccionada(e.target.value)}
