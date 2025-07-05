@@ -68,41 +68,40 @@ const Header = () => {
       </nav>
       <div className="auth-buttons">
         {!isAuthPage && (user ? (
-            <>
-              <button
-                className="user-circle-btn"
-                title="Modificar usuario"
-                onClick={() => navigate("/modificarusuario")}
-                style={{ padding: 0, border: "none", background: "none" }}
-              >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      display: "block"
-                    }}
-                  />
-                ) : (
-                  user.displayName
-                    ? user.displayName.charAt(0).toUpperCase()
-                    : (user.email ? user.email.charAt(0).toUpperCase() : "U")
-                )}
-              </button>
-              <button className="login-btn" onClick={handleLogout}>
-                Cerrar Sesión
-              </button>
-            </>
-          ) : (
-            <Link to="/login" className="login-btn">
-              Iniciar Sesión
+          <>
+            <Link
+              to="/modificarusuario"
+              className="user-circle-btn"
+              title="Modificar usuario"
+              style={{ padding: 0, border: "none", background: "white" }}
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Avatar"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    display: "block"
+                  }}
+                />
+              ) : (
+                user.displayName
+                  ? user.displayName.charAt(0).toUpperCase()
+                  : (user.email ? user.email.charAt(0).toUpperCase() : "U")
+              )}
             </Link>
-          )
-        )}
+            <button className="login-btn" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
+          </>
+        ) : (
+          <Link to="/login" className="login-btn">
+            Iniciar Sesión
+          </Link>
+        ))}
       </div>
     </header>
   );
