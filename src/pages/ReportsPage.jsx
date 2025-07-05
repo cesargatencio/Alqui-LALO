@@ -391,78 +391,88 @@ const ReportsPage = () => {
     try {
       if (selectedReport === "alquileres") {
         const filtered = getFilteredReservas();
-        return (
-          <div>
-            <h3>Solicitudes de alquiler ({filtered.length})</h3>
-            {filtered.length === 0 ? (
-              <p className="no-data">No hay solicitudes en el rango seleccionado</p>
-            ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Espacio</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((r, index) => {
-                    const fecha = getFechaReserva(r);
-                    return (
-                      <tr key={r.id || index}>
-                        <td>{getNombreEspacio(r)}</td>
-                        <td>{getNombreUsuario(r)}</td>
-                        <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
-                        <td>{r.hora || "N/A"}</td>
-                        <td>{r.estado || "pendiente"}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        );
+const filteredSorted = [...filtered].sort((a, b) => {
+  const fechaA = getFechaReserva(a);
+  const fechaB = getFechaReserva(b);
+  return fechaB - fechaA; // Más reciente primero
+});
+return (
+  <div>
+    <h3>Solicitudes de alquiler ({filteredSorted.length})</h3>
+    {filteredSorted.length === 0 ? (
+      <p className="no-data">No hay solicitudes en el rango seleccionado</p>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th>Espacio</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredSorted.map((r, index) => {
+            const fecha = getFechaReserva(r);
+            return (
+              <tr key={r.id || index}>
+                <td>{getNombreEspacio(r)}</td>
+                <td>{getNombreUsuario(r)}</td>
+                <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
+                <td>{r.hora || "N/A"}</td>
+                <td>{r.estado || "pendiente"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    )}
+  </div>
+);
       }
 
       if (selectedReport === "canceladas") {
         const filtered = getFilteredReservas("cancelada");
-        return (
-          <div>
-            <h3>Solicitudes canceladas ({filtered.length})</h3>
-            {filtered.length === 0 ? (
-              <p className="no-data">No hay solicitudes canceladas en el rango seleccionado</p>
-            ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Espacio</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Motivo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((r, index) => {
-                    const fecha = getFechaReserva(r);
-                    return (
-                      <tr key={r.id || index}>
-                        <td>{getNombreEspacio(r)}</td>
-                        <td>{getNombreUsuario(r)}</td>
-                        <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
-                        <td>{r.hora || "N/A"}</td>
-                        <td>{r.motivoCancelacion || "No especificado"}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        );
+const filteredSorted = [...filtered].sort((a, b) => {
+  const fechaA = getFechaReserva(a);
+  const fechaB = getFechaReserva(b);
+  return fechaB - fechaA; // Más reciente primero
+});
+return (
+  <div>
+    <h3>Solicitudes canceladas ({filteredSorted.length})</h3>
+    {filteredSorted.length === 0 ? (
+      <p className="no-data">No hay solicitudes canceladas en el rango seleccionado</p>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th>Espacio</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredSorted.map((r, index) => {
+            const fecha = getFechaReserva(r);
+            return (
+              <tr key={r.id || index}>
+                <td>{getNombreEspacio(r)}</td>
+                <td>{getNombreUsuario(r)}</td>
+                <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
+                <td>{r.hora || "N/A"}</td>
+                <td>{r.motivoCancelacion || "No especificado"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    )}
+  </div>
+);
       }
 
       if (selectedReport === "ranking") {
