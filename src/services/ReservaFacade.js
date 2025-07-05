@@ -1,5 +1,13 @@
 import { db } from "../firebase";
-import { doc, setDoc, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 
 class ReservaService {
   static instance = null;
@@ -24,20 +32,20 @@ class ReservaService {
       monto,
       detalles: {
         ...detalles,
-        imagenEspacio: detalles.imagenEspacio 
+        imagenEspacio: detalles.imagenEspacio,
       },
       estado: "pendiente_pago",
       creadaEn: new Date(),
-      fechaReserva: new Date() // Para reportes
+      fechaReserva: new Date(), // Para reportes
     });
   }
 
   async confirmarPago(reservaId, detallesPago) {
     const reservaRef = doc(db, "reservas", reservaId);
-    await updateDoc(reservaRef, { 
-      estado: "pagada", 
+    await updateDoc(reservaRef, {
+      estado: "pagada",
       detallesPago,
-      fechaPago: new Date()
+      fechaPago: new Date(),
     });
   }
 
@@ -50,10 +58,10 @@ class ReservaService {
 
   async cancelarReserva(reservaId, motivoCancelacion = "No especificado") {
     const reservaRef = doc(db, "reservas", reservaId);
-    await updateDoc(reservaRef, { 
+    await updateDoc(reservaRef, {
       estado: "cancelada",
       motivoCancelacion,
-      fechaCancelacion: new Date()
+      fechaCancelacion: new Date(),
     });
   }
 
@@ -64,7 +72,7 @@ class ReservaService {
       const querySnapshot = await getDocs(reservasRef);
       return querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
     } catch (error) {
       console.error("Error al obtener todas las reservas:", error);
@@ -80,7 +88,7 @@ class ReservaService {
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
     } catch (error) {
       console.error(`Error al obtener reservas con estado ${estado}:`, error);
@@ -93,15 +101,15 @@ class ReservaService {
     try {
       const reservasRef = collection(db, "reservas");
       const querySnapshot = await getDocs(reservasRef);
-      
+
       return querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter((reserva) => {
           let fechaReserva = null;
-          
+
           if (reserva.fechaReserva) {
             if (reserva.fechaReserva.toDate) {
               fechaReserva = reserva.fechaReserva.toDate();
@@ -119,7 +127,7 @@ class ReservaService {
           }
 
           if (!fechaReserva || isNaN(fechaReserva.getTime())) return false;
-          
+
           return fechaReserva >= fechaInicio && fechaReserva <= fechaFin;
         });
     } catch (error) {

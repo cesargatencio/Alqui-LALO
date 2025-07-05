@@ -9,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import ReservaService from "../services/ReservaFacade";
-import espaciosData from "../data/espacios.json"; 
+import espaciosData from "../data/espacios.json";
 import "./ReportsPage.css";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -35,10 +35,9 @@ const ReportsPage = () => {
     try {
       console.log("Cargando espacios...");
       const dict = {};
-      
-      // Verificar si espaciosData existe y es un array
+
       if (Array.isArray(espaciosData)) {
-        espaciosData.forEach(espacio => {
+        espaciosData.forEach((espacio) => {
           if (espacio && espacio.id && espacio.nombre) {
             dict[espacio.id.toString()] = espacio.nombre;
           }
@@ -49,12 +48,12 @@ const ReportsPage = () => {
         console.warn("espaciosData no es un array válido:", espaciosData);
         // Diccionario por defecto si no se puede cargar
         setEspaciosDict({
-          "1": "Auditorio Polar",
-          "2": "Salón Eugenio Mendoza",
-          "3": "Área de Videojuegos",
-          "4": "Samán",
-          "5": "Salón metaverso",
-          "6": "Salón de computación"
+          1: "Auditorio Polar",
+          2: "Salón Eugenio Mendoza",
+          3: "Área de Videojuegos",
+          4: "Samán",
+          5: "Salón metaverso",
+          6: "Salón de computación",
         });
       }
     } catch (error) {
@@ -68,19 +67,20 @@ const ReportsPage = () => {
     const fetchReservas = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         console.log("Iniciando carga de reservas...");
         const reservaService = ReservaService.getInstance();
-        
-        // Verificar si el método existe
-        if (typeof reservaService.obtenerTodasLasReservas !== 'function') {
-          throw new Error("El método obtenerTodasLasReservas no existe en ReservaService");
+       
+        if (typeof reservaService.obtenerTodasLasReservas !== "function") {
+          throw new Error(
+            "El método obtenerTodasLasReservas no existe en ReservaService"
+          );
         }
-        
+
         const data = await reservaService.obtenerTodasLasReservas();
         console.log("Reservas cargadas:", data);
-        
+
         if (Array.isArray(data)) {
           setReservas(data);
         } else {
@@ -122,10 +122,12 @@ const ReportsPage = () => {
   // Obtener nombre del usuario
   const getNombreUsuario = (reserva) => {
     try {
-      return reserva.nombreUsuario || 
-             reserva.usuario || 
-             (reserva.detalles && reserva.detalles.nombreUsuario) || 
-             "Usuario";
+      return (
+        reserva.nombreUsuario ||
+        reserva.usuario ||
+        (reserva.detalles && reserva.detalles.nombreUsuario) ||
+        "Usuario"
+      );
     } catch (error) {
       console.error("Error al obtener nombre del usuario:", error);
       return "Error";
@@ -136,9 +138,9 @@ const ReportsPage = () => {
   const getFechaReserva = (reserva) => {
     try {
       let fecha = null;
-      
+
       if (reserva.fechaReserva) {
-        if (typeof reserva.fechaReserva.toDate === 'function') {
+        if (typeof reserva.fechaReserva.toDate === "function") {
           fecha = reserva.fechaReserva.toDate();
         } else if (reserva.fechaReserva instanceof Date) {
           fecha = reserva.fechaReserva;
@@ -146,7 +148,7 @@ const ReportsPage = () => {
           fecha = new Date(reserva.fechaReserva);
         }
       } else if (reserva.creadaEn) {
-        if (typeof reserva.creadaEn.toDate === 'function') {
+        if (typeof reserva.creadaEn.toDate === "function") {
           fecha = reserva.creadaEn.toDate();
         } else {
           fecha = new Date(reserva.creadaEn);
@@ -176,7 +178,7 @@ const ReportsPage = () => {
 
           const inRange = fecha >= fromDate && fecha <= now;
           const matchesEstado = estado ? reserva.estado === estado : true;
-          
+
           return inRange && matchesEstado;
         } catch (error) {
           console.error("Error al filtrar reserva:", error);
@@ -193,7 +195,7 @@ const ReportsPage = () => {
   const groupByDate = (data) => {
     try {
       const counts = {};
-      
+
       data.forEach((reserva) => {
         try {
           const fecha = getFechaReserva(reserva);
@@ -223,12 +225,12 @@ const ReportsPage = () => {
   const getRankingSalones = () => {
     try {
       const counts = {};
-      
+
       reservas.forEach((reserva) => {
         try {
           // Excluir canceladas del ranking
           if (reserva.estado === "cancelada") return;
-          
+
           const nombre = getNombreEspacio(reserva);
           counts[nombre] = (counts[nombre] || 0) + 1;
         } catch (error) {
@@ -254,7 +256,9 @@ const ReportsPage = () => {
       const data = Object.values(grouped);
 
       if (labels.length === 0) {
-        return <div className="no-data">No hay datos para mostrar en este rango</div>;
+        return (
+          <div className="no-data">No hay datos para mostrar en este rango</div>
+        );
       }
 
       return (
@@ -278,10 +282,10 @@ const ReportsPage = () => {
                 beginAtZero: true,
                 ticks: {
                   stepSize: 1,
-                  precision: 0
-                }
-              }
-            }
+                  precision: 0,
+                },
+              },
+            },
           }}
         />
       );
@@ -300,7 +304,11 @@ const ReportsPage = () => {
       const data = Object.values(grouped);
 
       if (labels.length === 0) {
-        return <div className="no-data">No hay reservas canceladas en este rango</div>;
+        return (
+          <div className="no-data">
+            No hay reservas canceladas en este rango
+          </div>
+        );
       }
 
       return (
@@ -324,10 +332,10 @@ const ReportsPage = () => {
                 beginAtZero: true,
                 ticks: {
                   stepSize: 1,
-                  precision: 0
-                }
-              }
-            }
+                  precision: 0,
+                },
+              },
+            },
           }}
         />
       );
@@ -345,7 +353,9 @@ const ReportsPage = () => {
       const data = ranking.map((r) => r.cantidad);
 
       if (labels.length === 0) {
-        return <div className="no-data">No hay datos de ranking disponibles</div>;
+        return (
+          <div className="no-data">No hay datos de ranking disponibles</div>
+        );
       }
 
       return (
@@ -370,10 +380,10 @@ const ReportsPage = () => {
                 beginAtZero: true,
                 ticks: {
                   stepSize: 1,
-                  precision: 0
-                }
-              }
-            }
+                  precision: 0,
+                },
+              },
+            },
           }}
         />
       );
@@ -391,88 +401,100 @@ const ReportsPage = () => {
     try {
       if (selectedReport === "alquileres") {
         const filtered = getFilteredReservas();
-const filteredSorted = [...filtered].sort((a, b) => {
-  const fechaA = getFechaReserva(a);
-  const fechaB = getFechaReserva(b);
-  return fechaB - fechaA; // Más reciente primero
-});
-return (
-  <div>
-    <h3>Solicitudes de alquiler ({filteredSorted.length})</h3>
-    {filteredSorted.length === 0 ? (
-      <p className="no-data">No hay solicitudes en el rango seleccionado</p>
-    ) : (
-      <table>
-        <thead>
-          <tr>
-            <th>Espacio</th>
-            <th>Usuario</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredSorted.map((r, index) => {
-            const fecha = getFechaReserva(r);
-            return (
-              <tr key={r.id || index}>
-                <td>{getNombreEspacio(r)}</td>
-                <td>{getNombreUsuario(r)}</td>
-                <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
-                <td>{r.hora || "N/A"}</td>
-                <td>{r.estado || "pendiente"}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    )}
-  </div>
-);
+        const filteredSorted = [...filtered].sort((a, b) => {
+          const fechaA = getFechaReserva(a);
+          const fechaB = getFechaReserva(b);
+          return fechaB - fechaA; // Más reciente primero
+        });
+        return (
+          <div>
+            <h3>Solicitudes de alquiler ({filteredSorted.length})</h3>
+            {filteredSorted.length === 0 ? (
+              <p className="no-data">
+                No hay solicitudes en el rango seleccionado
+              </p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Espacio</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSorted.map((r, index) => {
+                    const fecha = getFechaReserva(r);
+                    return (
+                      <tr key={r.id || index}>
+                        <td>{getNombreEspacio(r)}</td>
+                        <td>{getNombreUsuario(r)}</td>
+                        <td>
+                          {fecha
+                            ? fecha.toLocaleDateString()
+                            : r.fecha || "N/A"}
+                        </td>
+                        <td>{r.hora || "N/A"}</td>
+                        <td>{r.estado || "pendiente"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        );
       }
 
       if (selectedReport === "canceladas") {
         const filtered = getFilteredReservas("cancelada");
-const filteredSorted = [...filtered].sort((a, b) => {
-  const fechaA = getFechaReserva(a);
-  const fechaB = getFechaReserva(b);
-  return fechaB - fechaA; // Más reciente primero
-});
-return (
-  <div>
-    <h3>Solicitudes canceladas ({filteredSorted.length})</h3>
-    {filteredSorted.length === 0 ? (
-      <p className="no-data">No hay solicitudes canceladas en el rango seleccionado</p>
-    ) : (
-      <table>
-        <thead>
-          <tr>
-            <th>Espacio</th>
-            <th>Usuario</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Motivo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredSorted.map((r, index) => {
-            const fecha = getFechaReserva(r);
-            return (
-              <tr key={r.id || index}>
-                <td>{getNombreEspacio(r)}</td>
-                <td>{getNombreUsuario(r)}</td>
-                <td>{fecha ? fecha.toLocaleDateString() : r.fecha || "N/A"}</td>
-                <td>{r.hora || "N/A"}</td>
-                <td>{r.motivoCancelacion || "No especificado"}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    )}
-  </div>
-);
+        const filteredSorted = [...filtered].sort((a, b) => {
+          const fechaA = getFechaReserva(a);
+          const fechaB = getFechaReserva(b);
+          return fechaB - fechaA; // Más reciente primero
+        });
+        return (
+          <div>
+            <h3>Solicitudes canceladas ({filteredSorted.length})</h3>
+            {filteredSorted.length === 0 ? (
+              <p className="no-data">
+                No hay solicitudes canceladas en el rango seleccionado
+              </p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Espacio</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Motivo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSorted.map((r, index) => {
+                    const fecha = getFechaReserva(r);
+                    return (
+                      <tr key={r.id || index}>
+                        <td>{getNombreEspacio(r)}</td>
+                        <td>{getNombreUsuario(r)}</td>
+                        <td>
+                          {fecha
+                            ? fecha.toLocaleDateString()
+                            : r.fecha || "N/A"}
+                        </td>
+                        <td>{r.hora || "N/A"}</td>
+                        <td>{r.motivoCancelacion || "No especificado"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        );
       }
 
       if (selectedReport === "ranking") {
@@ -531,32 +553,41 @@ return (
         <div className="reports-left">
           <h2>Reportes Administrativos</h2>
           <p>
-            Esta sección es exclusiva para administradores. Aquí podrás generar y visualizar reportes sobre reservas, cancelaciones y uso de espacios.
+            Esta sección es exclusiva para administradores. Aquí podrás generar
+            y visualizar reportes sobre reservas, cancelaciones y uso de
+            espacios.
           </p>
           <div className="reports-list">
             <button
               className={selectedReport === "alquileres" ? "active" : ""}
               onClick={() => setSelectedReport("alquileres")}
             >
-              <span role="img" aria-label="alquiler">📅</span>{" "}
+              <span role="img" aria-label="alquiler">
+                📅
+              </span>{" "}
               Reporte de solicitudes de alquiler
             </button>
             <button
               className={selectedReport === "canceladas" ? "active" : ""}
               onClick={() => setSelectedReport("canceladas")}
             >
-              <span role="img" aria-label="canceladas">❌</span>{" "}
+              <span role="img" aria-label="canceladas">
+                ❌
+              </span>{" "}
               Reporte de solicitudes canceladas
             </button>
             <button
               className={selectedReport === "ranking" ? "active" : ""}
               onClick={() => setSelectedReport("ranking")}
             >
-              <span role="img" aria-label="ranking">🏆</span>{" "}
+              <span role="img" aria-label="ranking">
+                🏆
+              </span>{" "}
               Ranking de Espacios más solicitados
             </button>
           </div>
-          {(selectedReport === "alquileres" || selectedReport === "canceladas") && (
+          {(selectedReport === "alquileres" ||
+            selectedReport === "canceladas") && (
             <div className="reports-filters">
               <label>Filtrar por rango de tiempo:</label>
               <select
@@ -572,13 +603,11 @@ return (
             </div>
           )}
         </div>
-        
+
         {/* Lado derecho: tabla y gráfica */}
         <div className="reports-right">
           <div className="reports-table-graph">
-            <div className="reports-table">
-              {renderReportContent()}
-            </div>
+            <div className="reports-table">{renderReportContent()}</div>
             <div className="reports-graph">
               {selectedReport === "alquileres" && renderAlquileresChart()}
               {selectedReport === "canceladas" && renderCanceladasChart()}
