@@ -265,7 +265,7 @@ const ReportsPage = () => {
               {
                 label: "Solicitudes de alquiler",
                 data,
-                backgroundColor: "#2563eb",
+                backgroundColor: "#f59e42",
               },
             ],
           }}
@@ -356,7 +356,7 @@ const ReportsPage = () => {
               {
                 label: "Solicitudes por salón",
                 data,
-                backgroundColor: "#2563eb",
+                backgroundColor: "#f59e42",
               },
             ],
           }}
