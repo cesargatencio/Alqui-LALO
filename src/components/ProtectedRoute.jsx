@@ -6,6 +6,7 @@ import AuthService from "../services/AuthSingleton";
 const adminEmails = [
   "cesar.atencio@unimet.edu.ve",
   "salvador@unimet.edu.ve",
+  "jesusdelgado@unimet.edu.ve"
   // agrega aquí más si lo necesitas
 ];
 

@@ -53,31 +53,53 @@
 }
 
 .user-circle-btn {
-  width: 32px;           /* Más pequeño */
-  height: 32px ;          /* Más pequeño */
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #fff;
-  color: #001F3F;
+  background: #fff;           /* Fondo blanco */
+  color: #111 !important;     /* Letra negra */
   border: none;
-  font-size: 1rem;       /* Más pequeño */
+  font-size: 1.2rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 8px;     /* Espacio solo a la derecha */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-right: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  overflow: hidden;
+  text-decoration: none;
 }
 
 .user-circle-btn:hover {
   background: #FF6D04;
-  color: #fff;
+  color: #fff !important;
 }
 
 .auth-buttons {
   display: flex;
   align-items: center;
+}
+
+.modificar-usuario-btn {
+  display: block !important;      /* Siempre visible */
+  background: #fff !important;    /* Fondo blanco */
+  color: #ffffff !important;      /* Texto azul oscuro */
+  border: 1px solid #FF6D04;      /* Borde naranja */
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  z-index: 1001;
+}
+
+.modificar-usuario-btn:hover {
+  background: #FF6D04;
+  color: #fff;
 }
 
 

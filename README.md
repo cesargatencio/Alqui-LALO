@@ -44,6 +44,7 @@ Localiza el array adminEmails al inicio del fichero. Por ejemplo:
 const adminEmails = [
 "cesar@unimet.edu.ve",
 "salvador@unimet.edu.ve",
+"jesusdelgado@correo.unimet",
 // agrega aquí más correos @unimet.edu.ve
 ];
 
