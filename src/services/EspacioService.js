@@ -66,3 +66,4 @@ export async function addEspacio(espacio) {
   return docRef.id;
 }
 
+
