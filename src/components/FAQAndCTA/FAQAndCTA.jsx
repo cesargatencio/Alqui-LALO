@@ -14,7 +14,7 @@ const FAQAndCTA = () => {
     <footer>
       <div className="footer-top">
         <div className="footer-logo">
-          <img src="/img/img7.jpg" alt="Logo AlquiLALO" />
+          <img src="Mascota.png"/>
         </div>
 
         <div className="footer-contact" id="contact-section">
@@ -22,6 +22,7 @@ const FAQAndCTA = () => {
           <div className="contact-info">
             <p>Teléfono: +58 414-7391967</p>
             <p>Correo Electrónico: unimet@unimet.edu.ve</p>
+            <p><strong>Horario de atención:</strong><br/>Lunes a Viernes, 8:00am - 5:00pm</p>
           </div>
         </div>
 
@@ -41,7 +42,7 @@ const FAQAndCTA = () => {
         </div>
       </div>
 
-      {/* Parte inferior (blanca) */}
+      
       <div className="footer-bottom">
         <p>© 2025 Alquilalo, Inc.</p>
 

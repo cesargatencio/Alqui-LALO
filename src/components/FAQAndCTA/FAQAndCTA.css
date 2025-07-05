@@ -2,7 +2,7 @@
 .footer-top {
   background-color: #001F3F;
   color: white;
-  padding: 40px 20px;
+  padding: 10px 10px 0 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -17,14 +17,21 @@
 }
 
 .footer-logo img {
-  width: 250px;
+  width: 200px;
   margin-right: 10px;
-  margin-left:  100px;
+  margin-left: 40px;
 }
 
 .footer-contact,
 .footer-location {
   max-width: 300px;
+}
+
+.footer-location,
+.footer-location h2,
+.footer-location p {
+  color: #fff ;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.18);
 }
 
 .footer-contact h4,
@@ -43,11 +50,11 @@
 
 /* Parte inferior (blanca) */
 .footer-bottom {
-  background-color: white;
-  color: #2545B9;
+  background-color: #001F3F;
+  color: #fff;
   padding: 20px;
   font-size: 14px;
-  border-top: 1px solid #ccc;
+  border-top: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -57,7 +64,7 @@
 
 .footer-links a {
   margin: 0 5px;
-  color: #2545B9;
+  color: #fff;
   text-decoration: none;
 }
 
