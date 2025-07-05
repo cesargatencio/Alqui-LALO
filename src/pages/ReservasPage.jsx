@@ -26,6 +26,18 @@ const MisReservas = () => {
     cargarReservas();
   }, []);
 
+  const handleEliminarReserva = async (reservaId) => {
+    const reserva = reservas.find(r => r.id === reservaId);
+    if (!reserva) return;
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar esta reserva para "${reserva.detalles.nombreEspacio}" el día ${new Date(reserva.fecha).toLocaleDateString()} a las ${reserva.hora}? Esta acción no se puede deshacer.`)) return;
+    try {
+      await reservaService.cancelarReserva(reservaId);
+      setReservas(prev => prev.filter(r => r.id !== reservaId));
+    } catch (err) {
+      alert("No se pudo eliminar la reserva: " + err.message);
+    }
+  };
+
   if (loading) return <p className="cargando">Cargando reservas...</p>;
 
   return (
@@ -36,7 +48,11 @@ const MisReservas = () => {
       ) : (
         <div className="reserva-grid">
           {reservas.map((reserva) => (
-            <ReservaCard key={reserva.id} reserva={reserva} />
+            <ReservaCard
+              key={reserva.id}
+              reserva={reserva}
+              onEliminar={handleEliminarReserva}
+            />
           ))}
         </div>
       )}
@@ -45,3 +61,4 @@ const MisReservas = () => {
 };
 
 export default MisReservas;
+
