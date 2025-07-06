@@ -56,6 +56,18 @@ class ReservaService {
     return querySnapshot.docs.map((doc) => doc.data());
   }
 
+  async obtenerReservasPorEspacio(espacioId) {
+    try {
+      const reservasRef = collection(db, "reservas");
+      const q = query(reservasRef, where("espacioId", "==", espacioId));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error("Error al obtener reservas por espacio:", error);
+      return [];
+    }
+  }
+
   async cancelarReserva(reservaId, motivoCancelacion = "No especificado") {
     const reservaRef = doc(db, "reservas", reservaId);
     await updateDoc(reservaRef, {
