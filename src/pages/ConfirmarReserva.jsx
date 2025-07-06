@@ -20,13 +20,32 @@ const ConfirmarReserva = () => {
     usuario
   } = state || {};
 
+  // Helper: convierte la cadena de duración a número de horas
+  const parseDuracionAHoras = (str) => {
+    switch (str) {
+      case "45 minutos":      return 0.75;
+      case "1 hora 30 min":   return 1.5;
+      case "2 horas":         return 2;
+      case "3 horas":         return 3;
+      case "6 horas":         return 6;
+      default:                return 1;  // fallback a 1 hora
+    }
+  };
+
   if (!espacio || !fecha || !hora || !duracion) {
     return <p className="conf-reserva-error">Faltan datos de reserva. Vuelve a Mis Reservas.</p>;
   }
 
-  const montoReserva = espacio.precio
+    // Tarifa base por hora (número)
+  const tarifaHora = espacio.precio
     ? parseFloat(String(espacio.precio).replace(/[^0-9.]/g, ""))
     : 15.0;
+
+  // Factor de horas según la duración seleccionada
+  const horas = parseDuracionAHoras(duracion);
+
+  // Monto total = tarifa * horas
+  const montoReserva = +(tarifaHora * horas).toFixed(2);
 
   // 👉 Para reservas ya creadas (desde MisReservas)
   const handlePagoExitoso = async (detalles) => {
@@ -90,22 +109,24 @@ const ConfirmarReserva = () => {
           <p><strong>Hora:</strong> {hora}</p>
           <p><strong>Duración:</strong> {duracion}</p>
           <p><strong>Monto a pagar:</strong> ${montoReserva}</p>
-           {/* Nuevo campo de descripción */}
-          <label style={{ display: "block", marginTop: "1rem" }}>
-            <strong>Descripción:</strong><br/>
-            <textarea
-              value={descripcion}
-              onChange={e => setDescripcion(e.target.value)}
-              placeholder="Escribe aquí una descripción para tu reserva..."
-              rows={3}
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc"
-              }}
-            />
-          </label>
+          {/* Descripción solo cuando sea una reserva nueva (no existe reservaId) */}
+  {!reservaId && (
+    <label style={{ display: "block", marginTop: "1rem" }}>
+      <strong>Descripción:</strong><br/>
+      <textarea
+        value={descripcion}
+        onChange={e => setDescripcion(e.target.value)}
+        placeholder="Escribe aquí una descripción para tu reserva..."
+        rows={3}
+        style={{
+          width: "100%",
+          padding: "0.5rem",
+          borderRadius: "6px",
+          border: "1px solid #ccc"
+        }}
+      />
+    </label>
+  )}
         </div>
 
         {reservaId ? (
