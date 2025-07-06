@@ -468,38 +468,6 @@ textarea {
   font-size: 1rem;
 }
 
-/* Estilos para el modal de eliminación */
-.modal-eliminar-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(44,62,80,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-eliminar {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem 2.2rem;
-  box-shadow: 0 8px 32px rgba(44,62,80,0.18);
-  max-width: 350px;
-  text-align: center;
-}
-
-.modal-eliminar h3 {
-  margin-top: 0;
-  color: #f44336;
-}
-
-.modal-eliminar-botones {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
 @media (max-width: 768px) {
   .espacio-header {
     flex-direction: column;

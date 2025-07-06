@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReservaService from "../../services/ReservaFacade";
 import "./ReservaCard.css";
@@ -6,18 +6,25 @@ import "./ReservaCard.css";
 const ReservaCard = ({ reserva, onEliminar }) => {
   const navigate = useNavigate();
   const reservaService = ReservaService.getInstance();
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [mensaje, setMensaje] = useState("");
 
-  const handleCancelar = async () => {
-    const confirmar = window.confirm(`¿Estás seguro de que deseas cancelar esta reserva?\n\nEspacio: ${reserva.detalles.nombreEspacio}\nFecha: ${new Date(reserva.fecha).toLocaleDateString()} a las ${reserva.hora}`);
-    
-    if (!confirmar) return; // ⚠️ Si cancela, no hacer nada
+  const handleCancelar = () => {
+    setMostrarModal(true);
+    setMensaje("");
+  };
 
+  const confirmarCancelacion = async () => {
     try {
       await reservaService.cancelarReserva(reserva.id);
-      alert("Reserva cancelada correctamente");
-      if (onEliminar) onEliminar(reserva.id);
+      setMensaje("Reserva cancelada correctamente");
+      setTimeout(() => {
+        setMensaje("");
+        setMostrarModal(false);
+        if (onEliminar) onEliminar(reserva.id);
+      }, 2000);
     } catch (e) {
-      alert("No se pudo cancelar la reserva: " + e.message);
+      setMensaje("No se pudo cancelar la reserva: " + e.message);
     }
   };
 
@@ -40,7 +47,6 @@ const ReservaCard = ({ reserva, onEliminar }) => {
   };
 
   const imgSrc = reserva.detalles.imagenEspacio || "/imagenes/espacio-default.jpg";
-
   return (
     <div className="reserva-card">
       <img
@@ -56,13 +62,11 @@ const ReservaCard = ({ reserva, onEliminar }) => {
           <strong>Estado:</strong>
           <span className={`estado ${reserva.estado}`}>{reserva.estado}</span>
         </p>
-
         {reserva.estado !== "cancelada" && (
           <>
             <button className="cancelar-btn" onClick={handleCancelar}>
               Cancelar Reserva
             </button>
-
             {reserva.estado === "pendiente_pago" && (
               <button className="pagar-btn" onClick={handlePagar}>
                 Pagar Reserva
@@ -71,6 +75,28 @@ const ReservaCard = ({ reserva, onEliminar }) => {
           </>
         )}
       </div>
+      {mostrarModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>¿Cancelar esta reserva?</h3>
+            <p>
+              Espacio: <b>{reserva.detalles.nombreEspacio}</b><br />
+              Fecha: <b>{new Date(reserva.fecha).toLocaleDateString()}</b> a las <b>{reserva.hora}</b>
+            </p>
+            <div className="modal-botones">
+              <button className="btn-cancelar" onClick={() => setMostrarModal(false)}>
+                No, volver
+              </button>
+              <button className="btn-guardar" onClick={confirmarCancelacion}>
+                Sí, cancelar
+              </button>
+            </div>
+            {mensaje && (
+              <div className="mensaje-exito">{mensaje}</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

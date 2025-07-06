@@ -29,7 +29,6 @@ const MisReservas = () => {
   const handleEliminarReserva = async (reservaId) => {
     const reserva = reservas.find(r => r.id === reservaId);
     if (!reserva) return;
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar esta reserva para "${reserva.detalles.nombreEspacio}" el día ${new Date(reserva.fecha).toLocaleDateString()} a las ${reserva.hora}? Esta acción no se puede deshacer.`)) return;
     try {
       await reservaService.cancelarReserva(reservaId);
       setReservas(prev => prev.filter(r => r.id !== reservaId));

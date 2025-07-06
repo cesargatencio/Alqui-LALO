@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaypalButton from "../components/PaypalButton/PaypalButton";
 import ReservaService from "../services/ReservaFacade";
@@ -9,6 +9,7 @@ const reservaService = ReservaService.getInstance();
 const ConfirmarReserva = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [mensajeExito, setMensajeExito] = useState("");
 
   const {
     reservaId,
@@ -32,10 +33,12 @@ const ConfirmarReserva = () => {
     try {
       if (!reservaId) throw new Error("No se encontró el ID de la reserva");
       await reservaService.confirmarPago(reservaId, detalles);
-      alert("Reserva pagada con éxito");
-      navigate("/mis-reservas");
+      setMensajeExito("Reserva pagada con éxito");
+      setTimeout(() => {
+        navigate("/mis-reservas");
+      }, 3000);
     } catch (error) {
-      alert("Error al confirmar el pago: " + error.message);
+      setMensajeExito("Error al confirmar el pago: " + error.message);
     }
   };
 
@@ -43,10 +46,12 @@ const ConfirmarReserva = () => {
     try {
       if (!reservaId) throw new Error("No se encontró el ID de la reserva");
       await reservaService.confirmarPago(reservaId, { metodo: "manual" });
-      alert("Reserva marcada como pagada manualmente.");
-      navigate("/mis-reservas");
+      setMensajeExito("Reserva marcada como pagada manualmente.");
+      setTimeout(() => {
+        navigate("/mis-reservas");
+      }, 1500);
     } catch (error) {
-      alert("Error al pagar manualmente: " + error.message);
+      setMensajeExito("Error al pagar manualmente: " + error.message);
     }
   };
 
@@ -65,10 +70,12 @@ const ConfirmarReserva = () => {
           imagenEspacio: espacio.imagenURL
         }
       });
-      alert("Reserva creada correctamente.");
-      navigate("/mis-reservas");
+      setMensajeExito("Reserva creada correctamente.");
+      setTimeout(() => {
+        navigate("/mis-reservas");
+      }, 1500);
     } catch (error) {
-      alert("Error al crear la reserva: " + error.message);
+      setMensajeExito("");
     }
   };
 
@@ -101,6 +108,10 @@ const ConfirmarReserva = () => {
           <button className="conf-reserva-btn" onClick={handleConfirmar}>
             Confirmar Reserva
           </button>
+        )}
+
+        {mensajeExito && (
+          <div className="mensaje-exito">{mensajeExito}</div>
         )}
       </div>
     </div>
