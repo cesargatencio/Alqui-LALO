@@ -15,6 +15,7 @@ export async function buscarEspacios(filtros = {}) {
 
   let q = espaciosCol;
   const constraints = [];
+
   if (filtros.capacidadMin) {
     constraints.push(where("capacidad", ">=", Number(filtros.capacidadMin)));
   }
@@ -22,12 +23,10 @@ export async function buscarEspacios(filtros = {}) {
     constraints.push(where("capacidad", "<=", Number(filtros.capacidadMax)));
   }
   if (filtros.precioMax) {
-    constraints.push(where("precio", "<=", Number(filtros.precioMax)));
+    constraints.push(where("precioHora", "<=", Number(filtros.precioMax))); // ← Usa un campo número
   }
 
-  if (constraints.length > 0) {
-    q = query(espaciosCol, ...constraints);
-  }
+  q = query(espaciosCol, ...constraints);
 
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
