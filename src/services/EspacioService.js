@@ -15,7 +15,11 @@ export async function buscarEspacios(filtros = {}) {
 
   let q = espaciosCol;
   const constraints = [];
-
+    if (filtros.categoria) {
+    constraints.push(
+      where("categoria", "==", filtros.categoria)
+    );
+  }
   if (filtros.capacidadMin) {
     constraints.push(where("capacidad", ">=", Number(filtros.capacidadMin)));
   }
@@ -68,6 +72,7 @@ export async function addEspacio(espacio) {
     precio:    espacio.precio, // Aquí tomo espacio.precio en vez de espacio.precioHora
     // Aquí tomo espacio.precio en vez de espacio.precioHora
     precioHora:  parseInt(espacio.precio, 10),
+    categoria:   espacio.categoria, // Asegúrate de que este campo exista en el objeto espacio
     imagen:      espacio.imagen,
     imagenPath:  espacio.imagenPath,
   };

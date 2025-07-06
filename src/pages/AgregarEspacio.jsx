@@ -10,6 +10,7 @@ const AgregarEspacio = () => {
     descripcion: "",
     capacidad: "",
     precio: "",
+    categoria: "", 
     imagenPath: "",
     imagenUrl: "",
   });
@@ -70,6 +71,7 @@ const AgregarEspacio = () => {
       !formData.descripcion ||
       !formData.capacidad ||
       !formData.precio ||
+      !formData.categoria ||
       !formData.imagenUrl ||
       !formData.imagenPath
     ) {
@@ -86,6 +88,7 @@ const AgregarEspacio = () => {
         descripcion: formData.descripcion,
         capacidad: formData.capacidad,
         precio: formData.precio,
+        categoria: formData.categoria,
         imagen: formData.imagenUrl,
         imagenPath: formData.imagenPath,
       });
@@ -143,6 +146,22 @@ const AgregarEspacio = () => {
               required
             />
           </label>
+          <label>
+  Categoría:
+  <select
+    name="categoria"
+    value={formData.categoria}
+    onChange={handleChange}
+    required
+  >
+    <option value="" disabled>Selecciona categoría</option>
+    <option value="Salon">Salón</option>
+    <option value="Auditorio">Auditorio</option>
+    <option value="Laboratorio">Laboratorio</option>
+    <option value="Aire Libre">Aire Libre</option>
+  </select>
+</label>
+
           <label htmlFor="imagen-input">Imagen:</label>
           <div
             className="imagen-preview-box"
