@@ -187,6 +187,23 @@ const ReportsPage = () => {
     }
   };
 
+  const getRankingSalonesPorRango = () => {
+  // Filtra las reservas por rango de fechas
+  const reservasFiltradas = getFilteredReservas();
+  // Cuenta las reservas por espacio, excluyendo canceladas
+  const counts = {};
+  reservasFiltradas.forEach((reserva) => {
+    if (reserva && reserva.estado !== "cancelada") {
+      const nombre = getNombreEspacio(reserva);
+      counts[nombre] = (counts[nombre] || 0) + 1;
+    }
+  });
+  // Ordena de mayor a menor y devuelve el ranking
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([nombre, cantidad]) => ({ nombre, cantidad }));
+};
+
   // Agrupar reservas por fecha para las gráficas
   const groupByDate = (data) => {
     try {
@@ -217,31 +234,7 @@ const ReportsPage = () => {
     }
   };
 
-  // Ranking de salones (corregido)
-  const getRankingSalones = () => {
-    try {
-      const counts = {};
 
-      reservas.forEach((reserva) => {
-        try {
-          // Excluir canceladas del ranking
-          if (reserva.estado === "cancelada") return;
-
-          const nombre = getNombreEspacio(reserva);
-          counts[nombre] = (counts[nombre] || 0) + 1;
-        } catch (error) {
-          console.error("Error al procesar reserva para ranking:", error);
-        }
-      });
-
-      return Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .map(([nombre, cantidad]) => ({ nombre, cantidad }));
-    } catch (error) {
-      console.error("Error al generar ranking:", error);
-      return [];
-    }
-  };
 
   // Gráfica de solicitudes de alquiler
   const renderAlquileresChart = () => {
@@ -342,52 +335,53 @@ const ReportsPage = () => {
   };
 
   // Gráfica de ranking de salones
-  const renderRankingChart = () => {
-    try {
-      const ranking = getRankingSalones();
-      const labels = ranking.map((r) => r.nombre);
-      const data = ranking.map((r) => r.cantidad);
+  // Gráfica de ranking de salones (filtrada por rango de fechas)
+const renderRankingChart = () => {
+  try {
+    const ranking = getRankingSalonesPorRango(); // <-- usa la función filtrada
+    const labels = ranking.map((r) => r.nombre);
+    const data = ranking.map((r) => r.cantidad);
 
-      if (labels.length === 0) {
-        return (
-          <div className="no-data">No hay datos de ranking disponibles</div>
-        );
-      }
-
+    if (labels.length === 0) {
       return (
-        <Bar
-          data={{
-            labels,
-            datasets: [
-              {
-                label: "Solicitudes por salón",
-                data,
-                backgroundColor: "#f59e42",
-              },
-            ],
-          }}
-          options={{
-            indexAxis: "y",
-            responsive: true,
-            plugins: { legend: { display: false } },
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                beginAtZero: true,
-                ticks: {
-                  stepSize: 1,
-                  precision: 0,
-                },
+        <div className="no-data">No hay datos de ranking disponibles en el rango seleccionado</div>
+      );
+    }
+
+    return (
+      <Bar
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Solicitudes por salón",
+              data,
+              backgroundColor: "#f59e42",
+            },
+          ],
+        }}
+        options={{
+          indexAxis: "y",
+          responsive: true,
+          plugins: { legend: { display: false } },
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+                precision: 0,
               },
             },
-          }}
-        />
-      );
-    } catch (error) {
-      console.error("Error al renderizar gráfica de ranking:", error);
-      return <div className="error">Error al cargar gráfica</div>;
-    }
-  };
+          },
+        }}
+      />
+    );
+  } catch (error) {
+    console.error("Error al renderizar gráfica de ranking:", error);
+    return <div className="error">Error al cargar gráfica</div>;
+  }
+};
 
   // Renderizado de cada reporte
   const renderReportContent = () => {
@@ -492,35 +486,35 @@ const ReportsPage = () => {
       }
 
       if (selectedReport === "ranking") {
-        const ranking = getRankingSalones();
-        return (
-          <div>
-            <h3>Ranking de Espacios más solicitados</h3>
-            {ranking.length === 0 ? (
-              <p className="no-data">No hay datos de ranking disponibles</p>
-            ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Posición</th>
-                    <th>Espacio</th>
-                    <th>Solicitudes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ranking.map((item, idx) => (
-                    <tr key={item.nombre || idx}>
-                      <td>{idx + 1}</td>
-                      <td>{item.nombre}</td>
-                      <td>{item.cantidad}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        );
-      }
+  const ranking = getRankingSalonesPorRango();
+  return (
+    <div>
+      <h3>Ranking de Espacios más solicitados</h3>
+      {ranking.length === 0 ? (
+        <p className="no-data">No hay datos de ranking disponibles en el rango seleccionado</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Posición</th>
+              <th>Espacio</th>
+              <th>Solicitudes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ranking.map((item, idx) => (
+              <tr key={item.nombre || idx}>
+                <td>{idx + 1}</td>
+                <td>{item.nombre}</td>
+                <td>{item.cantidad}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
 
       return <div>Selecciona un reporte</div>;
     } catch (error) {
@@ -581,7 +575,8 @@ const ReportsPage = () => {
             </button>
           </div>
           {(selectedReport === "alquileres" ||
-            selectedReport === "canceladas") && (
+            selectedReport === "canceladas" ||
+            selectedReport === "ranking") && (
             <div className="reports-filters">
               <label>Filtrar por rango de tiempo:</label>
               <select
