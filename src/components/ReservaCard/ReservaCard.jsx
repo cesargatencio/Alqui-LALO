@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReservaService from "../../services/ReservaFacade";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../firebase"; // Ajusta la ruta según tu proyecto
 import "./ReservaCard.css";
 
-const ReservaCard = ({ reserva, onEliminar }) => {
+const ReservaCard = ({ reserva, onEliminar, onModificar }) => {
   const navigate = useNavigate();
   const reservaService = ReservaService.getInstance();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [mostrarModalModificar, setMostrarModalModificar] = useState(false);
+  const [nuevaFecha, setNuevaFecha] = useState(reserva.fecha);
+  const [nuevaHora, setNuevaHora] = useState(reserva.hora);
+  const [nuevaDuracion, setNuevaDuracion] = useState(reserva.detalles.duracion);
+  const [mensajeMod, setMensajeMod] = useState("");
 
   const handleCancelar = () => {
     setMostrarModal(true);
@@ -46,6 +53,46 @@ const ReservaCard = ({ reserva, onEliminar }) => {
     });
   };
 
+  const verificarDisponibilidad = async () => {
+    const reservasRef = collection(db, "reservas");
+    const q = query(
+      reservasRef,
+      where("espacioId", "==", reserva.espacioId),
+      where("fecha", "==", nuevaFecha),
+      where("hora", "==", nuevaHora),
+      where("estado", "!=", "cancelada")
+    );
+    const querySnapshot = await getDocs(q);
+    // Si hay reservas distintas a la actual, está ocupado
+    return querySnapshot.docs.every(doc => doc.id === reserva.id);
+  };
+
+  const handleModificarReserva = async () => {
+    try {
+      const disponible = await verificarDisponibilidad();
+      if (!disponible) {
+        setMensajeMod("El espacio no está disponible en la nueva fecha y hora.");
+        return;
+      }
+      await ReservaService.getInstance().modificarReserva(reserva.id, {
+        fecha: nuevaFecha,
+        hora: nuevaHora,
+        detalles: {
+          ...reserva.detalles,
+          duracion: nuevaDuracion,
+        },
+      });
+      setMensajeMod("Reserva modificada correctamente.");
+      setTimeout(() => {
+        setMostrarModalModificar(false);
+        setMensajeMod("");
+        if (typeof onModificar === "function") onModificar(); // Si tienes un callback para recargar reservas
+      }, 1200);
+    } catch (e) {
+      setMensajeMod("Error al modificar la reserva.");
+    }
+  };
+
   const imgSrc = reserva.detalles.imagenEspacio || "/imagenes/espacio-default.jpg";
   return (
     <div className="reserva-card">
@@ -63,16 +110,19 @@ const ReservaCard = ({ reserva, onEliminar }) => {
           <span className={`estado ${reserva.estado}`}>{reserva.estado}</span>
         </p>
         {reserva.estado !== "cancelada" && (
-          <>
+          <div className="botones-acciones">
             <button className="cancelar-btn" onClick={handleCancelar}>
-              Cancelar Reserva
+              Cancelar
             </button>
             {reserva.estado === "pendiente_pago" && (
               <button className="pagar-btn" onClick={handlePagar}>
-                Pagar Reserva
+                Pagar
               </button>
             )}
-          </>
+            <button className="modificar-btn" onClick={() => setMostrarModalModificar(true)}>
+              Modificar
+            </button>
+          </div>
         )}
       </div>
       {mostrarModal && (
@@ -94,6 +144,130 @@ const ReservaCard = ({ reserva, onEliminar }) => {
             {mensaje && (
               <div className="mensaje-exito">{mensaje}</div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Modal de modificación */}
+      {mostrarModalModificar && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 style={{ textAlign: "center", fontSize: "1.5rem", marginBottom: "1.2rem" }}>
+              Modificar Reserva
+            </h3>
+            <form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.8rem",
+                width: "100%",
+              }}
+              onSubmit={e => {
+                e.preventDefault();
+                handleModificarReserva();
+              }}
+            >
+              <div style={{ width: "100%", maxWidth: "260px", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label style={{ fontWeight: "bold", color: "#333" }}>
+                  Fecha
+                  <input
+                    type="date"
+                    value={nuevaFecha}
+                    onChange={e => setNuevaFecha(e.target.value)}
+                    style={{
+                      fontSize: "1rem",
+                      padding: "0.3rem 0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #bbb",
+                      width: "100%",
+                      marginTop: "0.2rem"
+                    }}
+                    required
+                  />
+                </label>
+                <label style={{ fontWeight: "bold", color: "#333" }}>
+                  Hora
+                  <input
+                    type="time"
+                    value={nuevaHora}
+                    onChange={e => setNuevaHora(e.target.value)}
+                    style={{
+                      fontSize: "1rem",
+                      padding: "0.3rem 0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #bbb",
+                      width: "100%",
+                      marginTop: "0.2rem"
+                    }}
+                    required
+                  />
+                </label>
+                <label style={{ fontWeight: "bold", color: "#333" }}>
+                  Duración
+                  <select
+                    value={nuevaDuracion}
+                    onChange={e => setNuevaDuracion(e.target.value)}
+                    style={{
+                      fontSize: "1rem",
+                      padding: "0.3rem 0.6rem",
+                      borderRadius: "6px",
+                      border: "1px solid #bbb",
+                      width: "100%",
+                      marginTop: "0.2rem"
+                    }}
+                    required
+                  >
+                    <option value="45 minutos">45 minutos</option>
+                    <option value="1 hora 30 min">1 hora 30 min</option>
+                    <option value="2 horas">2 horas</option>
+                    <option value="3 horas">3 horas</option>
+                    <option value="6 horas">6 horas</option>
+                  </select>
+                </label>
+              </div>
+              <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                <button
+                  type="submit"
+                  className="btn-guardar"
+                  style={{
+                    background: "#219a00",
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    padding: "0.5rem 1.5rem",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    minWidth: "120px"
+                  }}
+                >
+                  Guardar Cambios
+                </button>
+                <button
+                  type="button"
+                  className="btn-cancelar"
+                  style={{
+                    background: "#e53935",
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    padding: "0.5rem 1.5rem",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    minWidth: "120px"
+                  }}
+                  onClick={() => setMostrarModalModificar(false)}
+                >
+                  Cancelar
+                </button>
+              </div>
+              {mensajeMod && (
+                <div className="mensaje-exito" style={{ marginTop: "1rem" }}>
+                  {mensajeMod}
+                </div>
+              )}
+            </form>
           </div>
         </div>
       )}
