@@ -121,18 +121,13 @@ const ReportsPage = () => {
 
   // Obtener nombre del usuario
   const getNombreUsuario = (reserva) => {
-    try {
-      return (
-        reserva.nombreUsuario ||
-        reserva.usuario ||
-        (reserva.detalles && reserva.detalles.nombreUsuario) ||
-        "Usuario"
-      );
-    } catch (error) {
-      console.error("Error al obtener nombre del usuario:", error);
-      return "Error";
-    }
-  };
+  return reserva.detalles?.usuarioEmail ||
+         reserva.usuarioEmail ||
+         reserva.nombreUsuario ||
+         reserva.usuario ||
+         reserva.usuarioId ||
+         "Usuario";
+};
 
   // Obtener fecha de la reserva
   const getFechaReserva = (reserva) => {
@@ -470,7 +465,6 @@ const ReportsPage = () => {
                     <th>Usuario</th>
                     <th>Fecha</th>
                     <th>Hora</th>
-                    <th>Motivo</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -486,7 +480,6 @@ const ReportsPage = () => {
                             : r.fecha || "N/A"}
                         </td>
                         <td>{r.hora || "N/A"}</td>
-                        <td>{r.motivoCancelacion || "No especificado"}</td>
                       </tr>
                     );
                   })}

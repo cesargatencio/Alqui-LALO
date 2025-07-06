@@ -8,6 +8,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
+import AuthService from "./AuthSingleton";
 
 class ReservaService {
   static instance = null;
@@ -32,6 +33,7 @@ class ReservaService {
       monto,
       detalles: {
         ...detalles,
+        usuarioEmail: AuthService.getInstance().getCurrentUser()?.email || "",
         imagenEspacio: detalles.imagenEspacio,
       },
       estado: "pendiente_pago",
