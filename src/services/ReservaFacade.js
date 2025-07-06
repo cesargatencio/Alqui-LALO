@@ -149,6 +149,16 @@ class ReservaService {
       return [];
     }
   }
+
+  async modificarReserva(reservaId, { fecha, hora, detalles }) {
+    const reservaRef = doc(db, "reservas", reservaId);
+    await updateDoc(reservaRef, {
+      fecha,
+      hora,
+      detalles,
+      actualizadaEn: new Date(),
+    });
+  }
 }
 
 export default ReservaService;

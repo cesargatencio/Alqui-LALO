@@ -470,8 +470,8 @@ const EspacioDetalle = () => {
               className="btn-alquilar"
               onClick={e => {
                 e.preventDefault();
-                if (!horaSeleccionada || !duracionSeleccionada) {
-                  setErrorReserva("Por favor, selecciona la hora y la duración.");
+                if (!fechaSeleccionada || !horaSeleccionada || !duracionSeleccionada) {
+                  setErrorReserva("Por favor, selecciona el día, la hora y la duración.");
                   return;
                 }
                 // Si todo está bien, navega:
