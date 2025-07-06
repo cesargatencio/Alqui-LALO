@@ -8,7 +8,7 @@ import "./LandingPage.css";
 
 const LandingPage = () => {
   const [formFiltros, setFormFiltros] = useState({
-    fecha: "",
+    categoria: "",
     capacidadMin: "",
     capacidadMax: "",
     precioMax: "",
@@ -33,7 +33,7 @@ const LandingPage = () => {
   const handleBuscar = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (formFiltros.fecha) params.set("fecha", formFiltros.fecha);
+    if (formFiltros.categoria)    params.set("categoria", formFiltros.categoria);
     if (formFiltros.capacidadMin)
       params.set("capacidadMin", formFiltros.capacidadMin);
     if (formFiltros.capacidadMax)
@@ -84,14 +84,20 @@ const LandingPage = () => {
       <form className="search-bar" onSubmit={handleBuscar}>
         <div className="search-fields">
           <label>
-            Fecha de reserva
-            <input
-              type="date"
-              name="fecha"
-              value={formFiltros.fecha}
-              onChange={handleChange}
-            />
-          </label>
+  Categoría
+  <select
+    name="categoria"
+    value={formFiltros.categoria}
+    onChange={handleChange}
+  >
+    <option value="">— Todas las categorías —</option>
+    <option value="Salon">Salón</option>
+    <option value="Auditorio">Auditorio</option>
+    <option value="Laboratorio">Laboratorio</option>
+    <option value="Aire Libre">Aire Libre</option>
+  </select>
+</label>
+
           <label>
             Capacidad mínima
             <input

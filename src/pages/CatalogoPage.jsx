@@ -3,10 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import AuthService from "../services/AuthSingleton";
 import FilterBar from "../components/FilterBar/FilterBar";
 import EspacioCard from "../components/EspacioCard/EspacioCard";
-import {
-  buscarEspacios,
-  espaciosDisponibles,
-} from "../services/EspacioService";
+import {buscarEspacios} from "../services/EspacioService";
 import "./CatalogoPage.css";
 
 export default function CatalogoPage() {
@@ -14,7 +11,7 @@ export default function CatalogoPage() {
 
   // Estado de los inputs
   const [formFiltros, setFormFiltros] = useState({
-    fecha: searchParams.get("fecha") || "",
+      categoria:    searchParams.get("categoria") || "",
     capacidadMin: searchParams.get("capacidadMin") || "",
     capacidadMax: searchParams.get("capacidadMax") || "",
     precioMax: searchParams.get("precioMax") || "",
@@ -23,7 +20,8 @@ export default function CatalogoPage() {
   // Mantén sincronizados los inputs con la URL al navegar o llegar desde landing
   useEffect(() => {
     setFormFiltros({
-      fecha: searchParams.get("fecha") || "",
+      
+       categoria:    searchParams.get("categoria") || "",
       capacidadMin: searchParams.get("capacidadMin") || "",
       capacidadMax: searchParams.get("capacidadMax") || "",
       precioMax: searchParams.get("precioMax") || "",
@@ -32,7 +30,7 @@ export default function CatalogoPage() {
 
   // Estado de los filtros aplicados (solo cambia al hacer submit)
   const [filtros, setFiltros] = useState({
-    fecha: searchParams.get("fecha") || "",
+    categoria:    searchParams.get("categoria") || "",
     capacidadMin: searchParams.get("capacidadMin") || "",
     capacidadMax: searchParams.get("capacidadMax") || "",
     precioMax: searchParams.get("precioMax") || "",
@@ -43,16 +41,16 @@ export default function CatalogoPage() {
 
   // Consulta los espacios cuando los filtros aplicados cambian
   useEffect(() => {
-    setLoading(true);
-    const fn = filtros.fecha ? espaciosDisponibles : buscarEspacios;
-    fn(filtros)
-      .then((data) => setEspacios(data))
-      .catch((err) => {
-        console.error("Error fetching espacios:", err);
-        setEspacios([]);
-      })
-      .finally(() => setLoading(false));
-  }, [filtros]);
+  setLoading(true);
+
+ buscarEspacios(filtros)
+    .then((data) => setEspacios(data))
+    .catch((err) => {
+      console.error("Error fetching espacios:", err);
+      setEspacios([]);
+    })
+    .finally(() => setLoading(false));
+}, [filtros]);
 
   // Maneja cambios en los inputs del filtro
   const handleChange = (e) => {
@@ -67,7 +65,8 @@ export default function CatalogoPage() {
 
     // Actualiza la URL
     const params = new URLSearchParams();
-    if (formFiltros.fecha) params.set("fecha", formFiltros.fecha);
+    
+    if (formFiltros.categoria)  params.set("categoria", formFiltros.categoria);
     if (formFiltros.capacidadMin)
       params.set("capacidadMin", formFiltros.capacidadMin);
     if (formFiltros.capacidadMax)

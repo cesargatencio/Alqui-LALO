@@ -13,13 +13,21 @@ const FilterBar = ({ filtros = {}, onChange, onSearch }) => {
     <form className="search-bar" onSubmit={onSearch}>
       <div className="search-fields">
         <label>
-          Fecha de reserva
-          <input
-            type="date"
-            name="fecha"
-            value={filtros.fecha || ""}
+          Categoría
+          <select
+            name="categoria"
+            value={filtros.categoria || ""}
             onChange={onChange}
-          />
+            
+          >
+
+   
+            <option value="" disabled>— Selecciona categoría —</option>
+            <option value="Salon">Salón</option>
+            <option value="Auditorio">Auditorio</option>
+            <option value="Laboratorio">Laboratorio</option>
+            <option value="Aire Libre">Aire Libre</option>
+          </select>
         </label>
         <label>
           Capacidad mínima
