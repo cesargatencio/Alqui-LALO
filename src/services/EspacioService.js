@@ -61,7 +61,18 @@ export async function espaciosDisponibles(filtros) {
  * @param {Object} espacio
  */
 export async function addEspacio(espacio) {
-  const docRef = await addDoc(espaciosCol, espacio);
+  const espacioParaGuardar = {
+    nombre:      espacio.nombre,
+    descripcion: espacio.descripcion,
+    capacidad:   parseInt(espacio.capacidad, 10),
+    precio:    espacio.precio, // Aquí tomo espacio.precio en vez de espacio.precioHora
+    // Aquí tomo espacio.precio en vez de espacio.precioHora
+    precioHora:  parseInt(espacio.precio, 10),
+    imagen:      espacio.imagen,
+    imagenPath:  espacio.imagenPath,
+  };
+
+  const docRef = await addDoc(espaciosCol, espacioParaGuardar);
   return docRef.id;
 }
 

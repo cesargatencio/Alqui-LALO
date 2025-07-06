@@ -260,22 +260,37 @@ const EspacioDetalle = () => {
 
   // Guardar cambios de edición
   const handleGuardarCambios = async (data) => {
-    try {
-      const ref = doc(db, "espacios", id);
-      await updateDoc(ref, data);
-      setEspacio({ ...espacio, ...data });
-      setMensajeExito("Espacio actualizado correctamente");
-      setTimeout(() => setMensajeExito(""),2000 ); // Opcional: oculta después de 3s
-      setTimeout(() => setEditando(false), 2000); // Si quieres que el formulario se cierre, deja esto
-      // Si quieres que el mensaje se vea sin cerrar el formulario, comenta la línea de arriba
-    } catch (error) {
-      alert("Error al actualizar el espacio: " + error.message);
-    }
-  };
+  try {
+    const ref = doc(db, "espacios", id);
+
+    // 1) Construyo el payload bien tipado
+    const actualizado = {
+      nombre:      data.nombre,
+      descripcion: data.descripcion,
+      capacidad:   parseInt(data.capacidad, 10),
+      precio:    data.precio, // Aquí tomo data.precio en vez de data.precioHora
+      // si quieres enteros: parseInt; si aceptas decimales: parseFloat
+      precioHora:  parseInt(data.precio, 10),
+      imagen:      data.imagen,
+      // no incluyas `data.id` ni `data.precio`
+    };
+
+    // 2) Lo mando a Firestore
+    await updateDoc(ref, actualizado);
+
+    // 3) Actualizo el estado local
+    setEspacio({ ...espacio, ...actualizado });
+    setTimeout(() => setMensajeExito(""), 2000);
+    setTimeout(() => setEditando(false), 2000);
+
+  } catch (error) {
+    alert("Error al actualizar el espacio: " + error.message);
+  }
+};
+
 
   // Eliminar espacio
   const handleEliminarEspacio = async () => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este espacio? Esta acción no se puede deshacer.")) return;
     try {
       await deleteDoc(doc(db, "espacios", id));
       navigate("/catalogo");

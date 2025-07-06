@@ -47,3 +47,12 @@
   font-weight: bold;
   font-size: 1rem;
 }
+.reserva-card .reserva-img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 1rem;
+  margin:  auto;
+  margin-top: 1rem;
+  display: block;
+}
