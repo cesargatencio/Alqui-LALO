@@ -304,208 +304,18 @@ const EspacioDetalle = () => {
   if (!espacio) return <p>Espacio no encontrado</p>;
 
   return (
-    <div className="espacio-detalle">
-      <div className="espacio-header">
-        <div className="espacio-imagen">
-          <ImagenEspacio src={espacio.imagen} alt={espacio.nombre} />
-        </div>
-        <div className="espacio-detalles">
-          <h2>{espacio.nombre}</h2>
-          <p><strong>Capacidad:</strong> {espacio.capacidad}</p>
-          <p><strong>Descripción:</strong> {espacio.descripcion}</p>
-          <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
-        </div>
-      </div>
-
-      <div className="espacio-extra">
-        <div className="extra-box">
-          <h3>Calendario de disponibilidad</h3>
-          <Calendar
-            tileDisabled={({ date, view }) =>
-              view === "month" &&
-              reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
-            }
-            tileClassName={({ date }) =>
-              reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
-                ? "fecha-ocupada"
-                : null
-            }
-            minDate={new Date()}
-            className="calendario-reserva"
-            onClickDay={setFechaSeleccionada}
-          />
-          <div className="leyenda-calendario">
-            <div className="leyenda-item">
-              <span className="leyenda-color fecha-libre"></span>
-              <span>Disponible</span>
-            </div>
-            <div className="leyenda-item">
-              <span className="leyenda-color fecha-ocupada"></span>
-              <span>Ocupado</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="extra-box">
-          <h3>Valóranos</h3>
-          <div className="promedio-container">
-            <span className="promedio-text">{promedio}</span>
-            <span className="promedio-stars">{estrellasJSX}</span>
-          </div>
-          <div className="estrellas">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                onClick={() => setRating(star)}
-                onMouseEnter={() => setHover(star)}
-                onMouseLeave={() => setHover(0)}
-                style={{
-                  cursor: "pointer",
-                  color: (hover || rating) >= star ? "#ffbb00" : "#ccc",
-                  fontSize: "1.8rem",
-                }}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-          <textarea
-            placeholder="Escríbenos acá tu reseña..."
-            value={comentario}
-            onChange={(e) => setComentario(e.target.value)}
-          />
-          <button className="btn-alquilar" onClick={enviarReseña}>
-            Enviar Reseña
-          </button>
-          {!cargandoReseñas && reseñas.length === 0 && <p>No hay reseñas aún.</p>}
-          {!cargandoReseñas && reseñas.length > 0 && (
-            <div className="historial-reseñas">
-              <h4 style={{ marginTop: "1rem" }}>Reseñas:</h4>
-              <ul>
-                {(verTodas ? reseñas : reseñas.slice(0, 3)).map((r) => (
-                  <li key={r.id} style={{ margin: "0.5rem 0" }}>
-                    <span style={{ color: "#ffbb00" }}>
-                      {"★".repeat(r.estrellas) + "☆".repeat(5 - r.estrellas)}
-                    </span>
-                    <br />
-                    <span style={{ fontSize: "0.95rem", color: "#333" }}>{r.texto}</span>
-                  </li>
-                ))}
-              </ul>
-              {reseñas.length > 3 && (
-                <button
-                  className="btn-alquilar"
-                  onClick={() => setVerTodas(!verTodas)}
-                  style={{ marginTop: "0.8rem", padding: "0.4rem 1rem", fontSize: "0.9rem" }}
-                >
-                  {verTodas ? "Ver menos" : "Ver todas"}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="reserva-seccion">
-        <h3>Realiza tu reserva</h3>
-        <div className="reserva-form">
-          <select
-            value={horaSeleccionada}
-            onChange={e => setHoraSeleccionada(e.target.value)}
-          >
-            <option value="">Selecciona hora</option>
-            <option value="07:00">07:00</option>
-            <option value="08:45">08:45</option>
-            <option value="10:30">10:30</option>
-            <option value="12:15">12:15</option>
-            <option value="2:00">2:00</option>
-            <option value="3:45">3:45</option>
-            <option value="5:30">5:30</option>
-          </select>
-
-          <select
-            value={duracionSeleccionada}
-            onChange={e => setDuracionSeleccionada(e.target.value)}
-          >
-            <option value="">Duración</option>
-            <option value="45 minutos">45 minutos</option>
-            <option value="1 hora 30 min">1 hora 30 min</option>
-            <option value="2 horas">2 horas</option>
-            <option value="3 horas">3 horas</option>
-            <option value="6 horas">6 horas</option>
-          </select>
-          <button
-            className="btn-alquilar"
-            onClick={e => {
-              e.preventDefault();
-              if (!horaSeleccionada || !duracionSeleccionada) {
-                setErrorReserva("Por favor, selecciona la hora y la duración.");
-                return;
-              }
-              // Si todo está bien, navega:
-              navigate("/confirmar-reserva", {
-                state: {
-                  espacio: {
-                    id: espacio.id,
-                    nombre: espacio.nombre,
-                    precio: espacio.precio,
-                    imagenURL: espacio.imagen
-                  },
-                  fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
-                  hora: horaSeleccionada,
-                  duracion: duracionSeleccionada,
-                  usuario: usuario ? { email: usuario.email, uid: usuario.uid } : null,
-                }
-              });
-            }}
-            type="button"
-          >
-            ALQUILAR
-          </button>
-          {errorReserva && (
-            <div style={{
-              color: "red",
-              marginTop: "12px",
-              fontWeight: "bold",
-              textAlign: "center"
-            }}>
-              {errorReserva}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Edición admin */}
-      {isAdmin && !editando && (
-        <div style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: "1rem",
-          marginTop: "2rem"
-        }}>
-          <button className="btn-eliminar-espacio" onClick={() => setMostrarModalEliminar(true)}>
-            Eliminar Espacio
-          </button>
-          <button className="btn-editar-espacio" onClick={() => setEditando(true)}>
-            Editar Espacio
-          </button>
-        </div>
-      )}
-      {isAdmin && editando && (
-        <EditarEspacio
-          espacio={espacio}
-          onSave={handleGuardarCambios}
-          onCancel={() => setEditando(false)}
-          mensajeExito={mensajeExito}
-        />
-      )}
-
+    <>
       {mostrarModalEliminar && (
-        <div className="modal-eliminar-overlay">
-          <div className="modal-eliminar">
-            <h3>¿Eliminar este espacio?</h3>
-            <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este espacio?</p>
-            <div className="modal-eliminar-botones">
+        <div className="modal-overlay">
+          <div className="modal modal-exito">
+            <h3 className="modal-exito-titulo" style={{ color: "#e53935" }}>
+              ¿Eliminar este espacio?
+            </h3>
+            <p>
+              Esta acción no se puede deshacer.<br />
+              ¿Estás seguro de que deseas eliminar este espacio?
+            </p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginTop: "1.5rem" }}>
               <button
                 className="btn-cancelar"
                 onClick={() => setMostrarModalEliminar(false)}
@@ -525,7 +335,204 @@ const EspacioDetalle = () => {
           </div>
         </div>
       )}
-    </div>
+
+      <div className="espacio-detalle">
+        <div className="espacio-header">
+          <div className="espacio-imagen">
+            <ImagenEspacio src={espacio.imagen} alt={espacio.nombre} />
+          </div>
+          <div className="espacio-detalles">
+            <h2>{espacio.nombre}</h2>
+            <p><strong>Capacidad:</strong> {espacio.capacidad}</p>
+            <p><strong>Descripción:</strong> {espacio.descripcion}</p>
+            <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
+          </div>
+        </div>
+
+        <div className="espacio-extra">
+          <div className="extra-box">
+            <h3>Calendario de disponibilidad</h3>
+            <Calendar
+              tileDisabled={({ date, view }) =>
+                view === "month" &&
+                reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
+              }
+              tileClassName={({ date }) =>
+                reservadoSet.has(new Date(date).setHours(0, 0, 0, 0))
+                  ? "fecha-ocupada"
+                  : null
+              }
+              minDate={new Date()}
+              className="calendario-reserva"
+              onClickDay={setFechaSeleccionada}
+            />
+            <div className="leyenda-calendario">
+              <div className="leyenda-item">
+                <span className="leyenda-color fecha-libre"></span>
+                <span>Disponible</span>
+              </div>
+              <div className="leyenda-item">
+                <span className="leyenda-color fecha-ocupada"></span>
+                <span>Ocupado</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="extra-box">
+            <h3>Valóranos</h3>
+            <div className="promedio-container">
+              <span className="promedio-text">{promedio}</span>
+              <span className="promedio-stars">{estrellasJSX}</span>
+            </div>
+            <div className="estrellas">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  onClick={() => setRating(star)}
+                  onMouseEnter={() => setHover(star)}
+                  onMouseLeave={() => setHover(0)}
+                  style={{
+                    cursor: "pointer",
+                    color: (hover || rating) >= star ? "#ffbb00" : "#ccc",
+                    fontSize: "1.8rem",
+                  }}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <textarea
+              placeholder="Escríbenos acá tu reseña..."
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+            />
+            <button className="btn-alquilar" onClick={enviarReseña}>
+              Enviar Reseña
+            </button>
+            {!cargandoReseñas && reseñas.length === 0 && <p>No hay reseñas aún.</p>}
+            {!cargandoReseñas && reseñas.length > 0 && (
+              <div className="historial-reseñas">
+                <h4 style={{ marginTop: "1rem" }}>Reseñas:</h4>
+                <ul>
+                  {(verTodas ? reseñas : reseñas.slice(0, 3)).map((r) => (
+                    <li key={r.id} style={{ margin: "0.5rem 0" }}>
+                      <span style={{ color: "#ffbb00" }}>
+                        {"★".repeat(r.estrellas) + "☆".repeat(5 - r.estrellas)}
+                      </span>
+                      <br />
+                      <span style={{ fontSize: "0.95rem", color: "#333" }}>{r.texto}</span>
+                    </li>
+                  ))}
+                </ul>
+                {reseñas.length > 3 && (
+                  <button
+                    className="btn-alquilar"
+                    onClick={() => setVerTodas(!verTodas)}
+                    style={{ marginTop: "0.8rem", padding: "0.4rem 1rem", fontSize: "0.9rem" }}
+                  >
+                    {verTodas ? "Ver menos" : "Ver todas"}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="reserva-seccion">
+          <h3>Realiza tu reserva</h3>
+          <div className="reserva-form">
+            <select
+              value={horaSeleccionada}
+              onChange={e => setHoraSeleccionada(e.target.value)}
+            >
+              <option value="">Selecciona hora</option>
+              <option value="07:00">07:00</option>
+              <option value="08:45">08:45</option>
+              <option value="10:30">10:30</option>
+              <option value="12:15">12:15</option>
+              <option value="2:00">2:00</option>
+              <option value="3:45">3:45</option>
+              <option value="5:30">5:30</option>
+            </select>
+
+            <select
+              value={duracionSeleccionada}
+              onChange={e => setDuracionSeleccionada(e.target.value)}
+            >
+              <option value="">Duración</option>
+              <option value="45 minutos">45 minutos</option>
+              <option value="1 hora 30 min">1 hora 30 min</option>
+              <option value="2 horas">2 horas</option>
+              <option value="3 horas">3 horas</option>
+              <option value="6 horas">6 horas</option>
+            </select>
+            <button
+              className="btn-alquilar"
+              onClick={e => {
+                e.preventDefault();
+                if (!horaSeleccionada || !duracionSeleccionada) {
+                  setErrorReserva("Por favor, selecciona la hora y la duración.");
+                  return;
+                }
+                // Si todo está bien, navega:
+                navigate("/confirmar-reserva", {
+                  state: {
+                    espacio: {
+                      id: espacio.id,
+                      nombre: espacio.nombre,
+                      precio: espacio.precio,
+                      imagenURL: espacio.imagen
+                    },
+                    fecha: fechaSeleccionada ? fechaSeleccionada.toISOString() : "",
+                    hora: horaSeleccionada,
+                    duracion: duracionSeleccionada,
+                    usuario: usuario ? { email: usuario.email, uid: usuario.uid } : null,
+                  }
+                });
+              }}
+              type="button"
+            >
+              ALQUILAR
+            </button>
+            {errorReserva && (
+              <div style={{
+                color: "red",
+                marginTop: "12px",
+                fontWeight: "bold",
+                textAlign: "center"
+              }}>
+                {errorReserva}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Edición admin */}
+        {isAdmin && !editando && (
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "1rem",
+            marginTop: "2rem"
+          }}>
+            <button className="btn-eliminar-espacio" onClick={() => setMostrarModalEliminar(true)}>
+              Eliminar Espacio
+            </button>
+            <button className="btn-editar-espacio" onClick={() => setEditando(true)}>
+              Editar Espacio
+            </button>
+          </div>
+        )}
+        {isAdmin && editando && (
+          <EditarEspacio
+            espacio={espacio}
+            onSave={handleGuardarCambios}
+            onCancel={() => setEditando(false)}
+            mensajeExito={mensajeExito}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
