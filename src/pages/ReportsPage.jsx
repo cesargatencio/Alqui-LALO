@@ -15,9 +15,10 @@ import "./ReportsPage.css";
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TIME_RANGES = [
-  { label: "Semana", value: 7 },
-  { label: "Últimos 15 días", value: 15 },
-  { label: "Mes", value: 30 },
+  { label: "1 Día", value: 1 },
+  { label: "1 Semana", value: 7 },
+  { label: "15 días", value: 15 },
+  { label: "1 Mes", value: 30 },
   { label: "5 meses", value: 150 },
   { label: "1 año", value: 365 },
 ];
