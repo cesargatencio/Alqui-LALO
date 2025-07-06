@@ -348,7 +348,7 @@ const EspacioDetalle = () => {
             <h2>{espacio.nombre}</h2>
             <p><strong>Capacidad:</strong> {espacio.capacidad}</p>
             <p><strong>Descripción:</strong> {espacio.descripcion}</p>
-            <p className="precio"><strong>Precio:</strong> {espacio.precio}</p>
+            <p className="precio"><strong>Precio:</strong> {espacio.precio} $/H</p>
           </div>
         </div>
 
@@ -409,7 +409,7 @@ const EspacioDetalle = () => {
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
             />
-             {/* NUEVO: Sección Eventos */}
+          
    
             <button className="btn-alquilar" onClick={enviarReseña}>
               Enviar Reseña
@@ -450,18 +450,10 @@ const EspacioDetalle = () => {
     <ul className="eventos-lista">
       {reservasEvento.map(r => (
         <li key={r.id} className="evento-item">
-          {/* Fecha */}
           <p>
-            <strong>Fecha:</strong>{" "}
-            {new Date(r.fecha).toLocaleDateString()}
-          
-          {/* Descripción */}
-          
-            <strong>          Descripción:</strong> {r.descripcion?.trim() || "N/A"}
-            {typeof r.descripcion === "string" 
-              ? r.descripcion 
-              : /* fallback si algo va mal */ ""}
-          </p>
+  <strong>Fecha:</strong> {new Date(r.fecha).toLocaleDateString()} — 
+  <strong>Descripción:</strong> {r.descripcion?.trim() || "N/A"}
+</p>
         </li>
       ))}
     </ul>
