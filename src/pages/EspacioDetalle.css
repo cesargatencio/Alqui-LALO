@@ -517,3 +517,18 @@ textarea {
 .modal-eliminar-botones .btn-eliminar-espacio:hover {
   background-color: #b71c1c; /* rojo más oscuro al hover */
 }
+/* Lista de eventos dentro de EspacioDetalle */
+.eventos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.evento-item {
+  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 0;
+}
+
+.evento-item p {
+  margin: 0.25rem 0;
+}

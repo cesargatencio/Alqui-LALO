@@ -23,6 +23,7 @@ const isFechaOcupada = (date) => {
   d.setHours(0, 0, 0, 0);
   return fechasOcupadas.some((f) => f.getTime() === d.getTime());
 };
+
 function renderEstrellasPromedio(promedio) {
   const fullStars = Math.floor(promedio);
   const hasHalfStar = promedio - fullStars >= 0.5;
@@ -138,7 +139,7 @@ const EspacioDetalle = () => {
   const [cargando, setCargando] = useState(true);
   const [editando, setEditando] = useState(false);
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
-
+  const [reservasEvento, setReservasEvento] = useState([]);
   // Reseñas
   const [cargandoReseñas, setCargandoReseñas] = useState(true);
   const [reseñas, setReseñas] = useState([]);
@@ -191,9 +192,11 @@ const EspacioDetalle = () => {
           return d.getTime();
         });
         setFechasReservadas(lista);
+        setReservasEvento(reservas.filter(r => r.estado !== "cancelada"));
       } catch (e) {
         console.error("Error cargando reservas:", e);
         setFechasReservadas([]);
+        setReservasEvento([]);
       }
     })();
   }, [espacio]);
@@ -406,6 +409,8 @@ const EspacioDetalle = () => {
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
             />
+             {/* NUEVO: Sección Eventos */}
+   
             <button className="btn-alquilar" onClick={enviarReseña}>
               Enviar Reseña
             </button>
@@ -437,6 +442,33 @@ const EspacioDetalle = () => {
             )}
           </div>
         </div>
+
+   {/* --- Sección Eventos dentro de <div className="espacio-extra"> --- */}
+<div className="extra-box">
+  <h3>Eventos</h3>
+  {reservasEvento.length > 0 ? (
+    <ul className="eventos-lista">
+      {reservasEvento.map(r => (
+        <li key={r.id} className="evento-item">
+          {/* Fecha */}
+          <p>
+            <strong>Fecha:</strong>{" "}
+            {new Date(r.fecha).toLocaleDateString()}
+          
+          {/* Descripción */}
+          
+            <strong>          Descripción:</strong> {r.descripcion?.trim() || "N/A"}
+            {typeof r.descripcion === "string" 
+              ? r.descripcion 
+              : /* fallback si algo va mal */ ""}
+          </p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>No hay eventos programados.</p>
+  )}
+</div>
 
         <div className="reserva-seccion">
           <h3>Realiza tu reserva</h3>

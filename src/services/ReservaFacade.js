@@ -20,7 +20,7 @@ class ReservaService {
     return ReservaService.instance;
   }
 
-  async crearReserva({ espacioId, usuarioId, fecha, hora, monto, detalles }) {
+  async crearReserva({ espacioId, usuarioId, fecha, hora, monto, detalles,descripcion  }) {
     const reservaId = `${espacioId}_${fecha}_${hora}`;
     const reservaRef = doc(db, "reservas", reservaId);
 
@@ -31,6 +31,7 @@ class ReservaService {
       fecha,
       hora,
       monto,
+      descripcion,
       detalles: {
         ...detalles,
         usuarioEmail: AuthService.getInstance().getCurrentUser()?.email || "",

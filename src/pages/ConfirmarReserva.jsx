@@ -10,7 +10,7 @@ const ConfirmarReserva = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [mensajeExito, setMensajeExito] = useState("");
-
+  const [descripcion, setDescripcion] = useState("");
   const {
     reservaId,
     espacio,
@@ -64,6 +64,7 @@ const ConfirmarReserva = () => {
         fecha,
         hora,
         monto: montoReserva,
+        descripcion,
         detalles: {
           duracion,
           nombreEspacio: espacio.nombre,
@@ -89,6 +90,22 @@ const ConfirmarReserva = () => {
           <p><strong>Hora:</strong> {hora}</p>
           <p><strong>Duración:</strong> {duracion}</p>
           <p><strong>Monto a pagar:</strong> ${montoReserva}</p>
+           {/* Nuevo campo de descripción */}
+          <label style={{ display: "block", marginTop: "1rem" }}>
+            <strong>Descripción:</strong><br/>
+            <textarea
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
+              placeholder="Escribe aquí una descripción para tu reserva..."
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                borderRadius: "6px",
+                border: "1px solid #ccc"
+              }}
+            />
+          </label>
         </div>
 
         {reservaId ? (
