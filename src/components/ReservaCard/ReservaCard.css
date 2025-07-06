@@ -1,20 +1,3 @@
-.pagar-btn {
-  background-color: #25ac03;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem; 
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-left: 1rem; /* Espacio entre botones */
-}
-
-.pagar-btn:hover {
-  background-color: #2e7d32;
-}
-
 /* Modal styles */
 .modal-overlay {
   position: fixed;
@@ -64,6 +47,11 @@
   gap: 0.5rem;
   margin-top: 1.2rem;
   flex-wrap: wrap;
+}
+.botones-acciones button {
+  vertical-align: middle;
+  align-self: center;
+
 }
 
 .cancelar-btn,

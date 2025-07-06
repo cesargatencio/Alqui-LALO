@@ -59,12 +59,11 @@ const ReservaCard = ({ reserva, onEliminar, onModificar }) => {
       reservasRef,
       where("espacioId", "==", reserva.espacioId),
       where("fecha", "==", nuevaFecha),
-      where("hora", "==", nuevaHora),
-      where("estado", "!=", "cancelada")
+      where("hora", "==", nuevaHora)
     );
     const querySnapshot = await getDocs(q);
-    // Si hay reservas distintas a la actual, está ocupado
-    return querySnapshot.docs.every(doc => doc.id === reserva.id);
+    // Solo está disponible si no hay otra reserva activa en ese horario
+    return querySnapshot.docs.every(doc => doc.id === reserva.id || doc.data().estado === "cancelada");
   };
 
   const handleModificarReserva = async () => {
@@ -119,9 +118,12 @@ const ReservaCard = ({ reserva, onEliminar, onModificar }) => {
                 Pagar
               </button>
             )}
-            <button className="modificar-btn" onClick={() => setMostrarModalModificar(true)}>
-              Modificar
-            </button>
+            {/* Solo mostrar el botón Modificar si la reserva NO está pagada */}
+            {reserva.estado !== "pagada" && (
+              <button className="modificar-btn" onClick={() => setMostrarModalModificar(true)}>
+                Modificar
+              </button>
+            )}
           </div>
         )}
       </div>
