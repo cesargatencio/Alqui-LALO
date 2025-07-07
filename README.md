@@ -35,9 +35,9 @@ Plataforma web para el alquiler de espacios en la Universidad Metropolitana. Con
 4. npm run dev
 
 Configuración de Administradores
-La lista de correos con privilegios de administrador está hard-coded en el componente que controla rutas protegidas. Para modificarla:
+La lista de correos con privilegios de administrador está hard-coded en el archivo que controla autenticacion. Para modificarla:
 
-Abre el archivo src/components/ProtectedRoute.jsx
+Abre el archivo src/service/AuthSingleton.js
 
 Localiza el array adminEmails al inicio del fichero. Por ejemplo:
 
