@@ -9,20 +9,7 @@ import "./EspacioDetalle.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 // --- Helpers y constantes fuera del componente ---
-const fechasOcupadas = [
-  new Date(2025, 6, 2),
-  new Date(2025, 6, 3),
-  new Date(2025, 6, 4),
-].map((d) => {
-  const d2 = new Date(d);
-  d2.setHours(0, 0, 0, 0);
-  return d2;
-});
-const isFechaOcupada = (date) => {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return fechasOcupadas.some((f) => f.getTime() === d.getTime());
-};
+
 
 function renderEstrellasPromedio(promedio) {
   const fullStars = Math.floor(promedio);
@@ -185,8 +172,14 @@ const EspacioDetalle = () => {
     if (!espacio) return;
     (async () => {
       try {
+        
         const reservas = await ReservaServiceInst.obtenerReservasPorEspacio(espacio.id);
-        const lista = reservas.map(r => {
+         // 1️⃣  Filtra las activas (todo lo que no esté cancelado)
+    const activas = reservas.filter(r => r.estado !== "cancelada");
+
+    // 2️⃣  Crea la lista de time-stamps SOLO con esas activas
+    const lista = activas.map(r => {
+       
           const d = new Date(r.fecha);
           d.setHours(0, 0, 0, 0);
           return d.getTime();
