@@ -35,10 +35,28 @@ class AuthService {
   }
 
   async loginWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
+  const provider = new GoogleAuthProvider();
+
+  // 1. Inicia el popup
+  const result = await signInWithPopup(auth, provider);
+  const user   = result.user;
+
+  // 2. Comprueba el dominio
+  const dominioOK = user.email?.toLowerCase().endsWith("@correo.unimet.edu.ve");
+
+  if (!dominioOK) {
+    // --- Deshace el login inmediatamente ---
+    await auth.signOut();        // cierra sesión
+    // (opcional) await user.delete();  // si NO quieres que quede en Firebase
+    throw new Error(
+      "Solo se permiten cuentas @correo.unimet.edu.ve"
+    );
   }
+
+  // 3. Todo bien
+  return user;
+}
+
 
   async updateUserData(uid, data) {
     const docRef = doc(db, "usuarios", uid);
