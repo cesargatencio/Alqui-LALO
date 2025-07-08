@@ -7,34 +7,46 @@ const espaciosCol = collection(db, "espacios");
  * Busca espacios según filtros básicos (capacidadMin, capacidadMax, precioMax)
  * @param {Object} filtros - { capacidadMin, capacidadMax, precioMax }
  */
+
 export async function buscarEspacios(filtros = {}) {
-  if (!filtros || Object.values(filtros).every((v) => !v)) {
-    const snap = await getDocs(espaciosCol);
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Si no hay filtros, devuelve todo
+  if (!filtros || Object.values(filtros).every(v => !v)) {
+    const snap = await getDocs(collection(db, "espacios"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 
-  let q = espaciosCol;
+  // Construimos sólo los constraints de capacidad (rangos en mismo campo)
   const constraints = [];
-    if (filtros.categoria) {
+  if (filtros.capacidadMin) {
     constraints.push(
-      where("categoria", "==", filtros.categoria)
+      where("capacidad", ">=", Number(filtros.capacidadMin))
     );
   }
-  if (filtros.capacidadMin) {
-    constraints.push(where("capacidad", ">=", Number(filtros.capacidadMin)));
-  }
   if (filtros.capacidadMax) {
-    constraints.push(where("capacidad", "<=", Number(filtros.capacidadMax)));
-  }
-  if (filtros.precioMax) {
-    constraints.push(where("precioHora", "<=", Number(filtros.precioMax))); // ← Usa un campo número
+    constraints.push(
+      where("capacidad", "<=", Number(filtros.capacidadMax))
+    );
   }
 
-  q = query(espaciosCol, ...constraints);
-
+  // Disparamos la consulta a Firestore con sólo filtros sobre 'capacidad'
+  const q = query(collection(db, "espacios"), ...constraints);
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  let resultados = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // Luego, en JS, aplicamos el filtro extra de precioHora
+  if (filtros.precioMax) {
+    const max = Number(filtros.precioMax);
+    resultados = resultados.filter(e => e.precioHora <= max);
+  }
+
+  // (Si además tienes categoría:)
+  if (filtros.categoria) {
+    resultados = resultados.filter(e => e.categoria === filtros.categoria);
+  }
+
+  return resultados;
 }
+
 
 /**
  * Obtiene espacios disponibles en una fecha y según filtros
